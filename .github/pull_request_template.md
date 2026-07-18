@@ -4,16 +4,35 @@ Closes #
 
 ## Change
 
--
+- Business outcome:
+- Technical approach:
+- Out of scope:
+
+## Risk
+
+- Risk level: Low / Medium / High / Critical
+- Authentication or authorization impact:
+- Data or migration impact:
+- Performance and availability impact:
 
 ## Verification
 
-- [ ] Backend quality checks pass or are not affected
-- [ ] Frontend quality checks pass or are not affected
-- [ ] Security and permission impact has been reviewed
-- [ ] Documentation and environment examples are updated when required
-- [ ] No secret, credential, customer data, or local `.env` file is included
+- Test evidence:
+- QA scenario:
+- Security scenario:
 
 ## Deployment and rollback
 
-Describe configuration changes, migration requirements, and the rollback path.
+- Configuration or migration:
+- Observability signal:
+- Rollback procedure:
+
+## Definition of Done
+
+- [ ] Acceptance criteria are satisfied
+- [ ] Automated tests cover the changed behavior
+- [ ] Security, privacy, and permission impacts are reviewed
+- [ ] Documentation and environment examples are updated
+- [ ] Rollout, monitoring, and rollback are defined
+- [ ] No secret, credential, customer data, or local environment file is included
+- [ ] Product Owner or delegate has accepted user-facing behavior

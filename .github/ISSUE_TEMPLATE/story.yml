@@ -1,0 +1,63 @@
+name: User story
+description: Define a sprint-ready product increment
+title: "feat: "
+labels: ["type: story", "status: refinement"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: User story
+      description: As a persona, I want a capability, so that a measurable outcome is achieved.
+      placeholder: As a customer, I want..., so that...
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Business value and success metric
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use Given/When/Then where practical.
+    validations:
+      required: true
+  - type: dropdown
+    id: points
+    attributes:
+      label: Story points
+      options: ["1", "2", "3", "5", "8", "13", "Needs refinement"]
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: ["P0 - Critical", "P1 - High", "P2 - Normal", "P3 - Low"]
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and constraints
+  - type: textarea
+    id: security
+    attributes:
+      label: Security, privacy, and permission impact
+    validations:
+      required: true
+  - type: checkboxes
+    id: ready
+    attributes:
+      label: Definition of Ready
+      options:
+        - label: Business value and acceptance criteria are clear
+          required: true
+        - label: Dependencies and external decisions are identified
+          required: true
+        - label: The story is estimated and small enough for one sprint
+          required: true
+        - label: Security and data classification are understood
+          required: true
