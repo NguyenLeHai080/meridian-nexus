@@ -1,0 +1,34 @@
+name: Technical spike
+description: Time-box research needed before implementation
+title: "chore(spike): "
+labels: ["type: spike", "status: refinement"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Decision or uncertainty
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Time-box
+      placeholder: 1 day
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options to evaluate
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Expected evidence and decision record
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and operational concerns

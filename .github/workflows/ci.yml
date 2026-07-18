@@ -1,46 +1,59 @@
-name: CI
+name: Enterprise CI
 
 on:
   pull_request:
     branches: [dev, staging, prod]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
     branches: [dev, staging, prod]
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
+  security-events: write
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: enterprise-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  commit-policy:
-    name: Commit policy
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    env:
-      PR_TITLE: ${{ github.event.pull_request.title }}
-    steps:
-      - name: Validate pull request title
-        shell: bash
-        run: |
-          pattern='^(feat|fix|refactor|docs|chore|style|perf|vendor|test|ci|build|security)(\([a-z0-9._/-]+\))?!?: .+ #[0-9]+$'
-          if [[ ! "$PR_TITLE" =~ $pattern ]]; then
-            echo "PR title must follow: type(scope): description #issue_id"
-            exit 1
-          fi
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "24"
+  VITE_API_URL: http://127.0.0.1:8000/api/v1
+  VITE_BACKEND_URL: http://127.0.0.1:8000
+  VITE_APP_NAME: Meridian Nexus
 
-  backend-quality:
-    name: Backend quality
+jobs:
+  governance:
+    name: PR governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate issue, branch, title, and Definition of Done
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.head_ref }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: python .github/scripts/validate_pull_request.py
+      - name: Record protected branch push
+        if: github.event_name == 'push'
+        run: echo "Protected branch push accepted after pull request governance."
+
+  backend-static:
+    name: Backend static quality
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: BE
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.13"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: |
             BE/requirements.txt
@@ -48,40 +61,205 @@ jobs:
       - run: python -m pip install --requirement requirements-dev.txt
       - run: ruff format --check northstar tests_python scripts
       - run: ruff check northstar tests_python scripts
-      - run: pytest
-      - run: pip-audit --requirement requirements.txt
 
-  frontend-quality:
-    name: Frontend quality
+  backend-contract:
+    name: Backend contract tests
     runs-on: ubuntu-latest
-    env:
-      VITE_API_URL: http://127.0.0.1:8000/api/v1
-      VITE_BACKEND_URL: http://127.0.0.1:8000
-      VITE_APP_NAME: Meridian Nexus
+    defaults:
+      run:
+        working-directory: BE
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            BE/requirements.txt
+            BE/requirements-dev.txt
+      - run: python -m pip install --requirement requirements-dev.txt
+      - run: pytest tests_python/test_api.py
+
+  backend-adversarial:
+    name: Backend adversarial tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BE
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            BE/requirements.txt
+            BE/requirements-dev.txt
+      - run: python -m pip install --requirement requirements-dev.txt
+      - run: pytest tests_python/test_adversarial.py
+
+  frontend-static:
+    name: Frontend static quality
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: FE
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: FE/package-lock.json
       - run: npm ci
-      - run: npm run quality
-      - run: npm audit --audit-level=high
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run lint
 
-  container-build:
-    name: Container build
+  frontend-unit:
+    name: Frontend unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: FE
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: FE/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  frontend-build:
+    name: Frontend production build
+    needs: [frontend-static, frontend-unit]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: FE
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: FE/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  dependency-audit:
+    name: Dependency and license gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: BE/requirements-dev.txt
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: FE/package-lock.json
+      - run: python -m pip install --requirement BE/requirements-dev.txt
+      - run: pip-audit --requirement BE/requirements.txt
+      - run: npm ci
+        working-directory: FE
+      - run: npm audit --audit-level=high
+        working-directory: FE
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        if: github.event_name == 'pull_request'
+        with:
+          fail-on-severity: high
+          license-check: true
+          deny-licenses: GPL-2.0, GPL-3.0, AGPL-1.0, AGPL-3.0
+
+  sast:
+    name: SAST (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: github/codeql-action/init@bb16b9baa2ec4010b29f5c606d57d01190139edd # v4.37.1
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@bb16b9baa2ec4010b29f5c606d57d01190139edd # v4.37.1
+
+  container-security:
+    name: Container security gate
+    needs: [backend-static, backend-contract, backend-adversarial]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: BE
           target: production
-          push: false
+          load: true
+          tags: meridian-nexus-api:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: meridian-nexus-api:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: false
+          severity: HIGH,CRITICAL
+
+  release-gate:
+    name: Enterprise release gate
+    if: always()
+    needs:
+      - governance
+      - backend-static
+      - backend-contract
+      - backend-adversarial
+      - frontend-static
+      - frontend-unit
+      - frontend-build
+      - dependency-audit
+      - sast
+      - container-security
+    runs-on: ubuntu-latest
+    env:
+      GOVERNANCE: ${{ needs.governance.result }}
+      BACKEND_STATIC: ${{ needs.backend-static.result }}
+      BACKEND_CONTRACT: ${{ needs.backend-contract.result }}
+      BACKEND_ADVERSARIAL: ${{ needs.backend-adversarial.result }}
+      FRONTEND_STATIC: ${{ needs.frontend-static.result }}
+      FRONTEND_UNIT: ${{ needs.frontend-unit.result }}
+      FRONTEND_BUILD: ${{ needs.frontend-build.result }}
+      DEPENDENCY_AUDIT: ${{ needs.dependency-audit.result }}
+      SAST: ${{ needs.sast.result }}
+      CONTAINER_SECURITY: ${{ needs.container-security.result }}
+    steps:
+      - name: Enforce every delivery gate
+        shell: bash
+        run: |
+          results=(
+            "$GOVERNANCE"
+            "$BACKEND_STATIC"
+            "$BACKEND_CONTRACT"
+            "$BACKEND_ADVERSARIAL"
+            "$FRONTEND_STATIC"
+            "$FRONTEND_UNIT"
+            "$FRONTEND_BUILD"
+            "$DEPENDENCY_AUDIT"
+            "$SAST"
+            "$CONTAINER_SECURITY"
+          )
+          for result in "${results[@]}"; do
+            if [[ "$result" != "success" ]]; then
+              echo "At least one enterprise delivery gate did not pass: ${results[*]}"
+              exit 1
+            fi
+          done
+          echo "All enterprise delivery gates passed." >> "$GITHUB_STEP_SUMMARY"
