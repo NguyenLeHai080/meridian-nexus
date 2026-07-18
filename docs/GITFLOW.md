@@ -25,7 +25,7 @@ git commit -m "feat(homepage): build storefront hero #123"
 git push -u origin feat/homepage
 ```
 
-After review, squash merge the feature into `dev`. Promote the tested commit through pull requests from `dev` to `staging` and from `staging` to `prod`.
+After review, squash merge the feature into `dev`. Promote the tested commit through pull requests from `dev` to `staging` and from `staging` to `prod` using **merge commits**. The merge commit preserves ancestry between long-lived environment branches.
 
 ## Hotfix flow
 
@@ -43,9 +43,12 @@ git push -u origin hotfix/fix_login_error
 
 After the production PR is merged and deployed, open synchronization PRs from `prod` into `staging` and `dev`. Resolve conflicts explicitly; never silently omit a production fix.
 
+Use merge commits for both synchronization PRs so the production lineage remains visible in every environment branch.
+
 ## Release rules
 
 - Never introduce an intentional defect into `prod` to practice hotfixes.
 - Run practice exercises in a disposable branch or training repository.
+- Squash short-lived branches into `dev`; never squash promotions between `dev`, `staging`, and `prod`.
 - Tag production releases using semantic versions such as `v1.2.0`.
 - Roll back by redeploying a previously verified immutable image tag, not by editing a running container.
