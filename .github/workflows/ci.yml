@@ -37,8 +37,8 @@ jobs:
       run:
         working-directory: BE
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           cache: pip
@@ -54,12 +54,16 @@ jobs:
   frontend-quality:
     name: Frontend quality
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: http://127.0.0.1:8000/api/v1
+      VITE_BACKEND_URL: http://127.0.0.1:8000
+      VITE_APP_NAME: Meridian Nexus
     defaults:
       run:
         working-directory: FE
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -72,9 +76,9 @@ jobs:
     name: Container build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/build-push-action@v6
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
         with:
           context: BE
           target: production

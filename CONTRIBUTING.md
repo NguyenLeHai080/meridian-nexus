@@ -46,4 +46,5 @@ Allowed types are `feat`, `fix`, `refactor`, `docs`, `chore`, `style`, `perf`, `
 - Use a Conventional Commit-style PR title ending with the issue ID.
 - Complete the PR template and include test evidence.
 - Do not merge while required checks or review are pending.
-- Prefer squash merge so the validated PR title becomes the final commit.
+- Squash merge feature, fix, refactor, documentation, and CI branches into `dev` so the validated PR title becomes the final commit.
+- Merge promotion PRs from `dev` to `staging`, from `staging` to `prod`, and hotfix synchronization PRs with a merge commit. Squashing long-lived branches breaks their ancestry and causes avoidable conflicts on the next promotion.
