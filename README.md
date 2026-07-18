@@ -29,7 +29,9 @@ Never commit real `.env` files, credentials, access tokens, database files, or p
 - `feat/<name>`: feature work created from `dev`.
 - `hotfix/<name>`: urgent production fixes created from `prod`.
 
-All changes enter protected branches through pull requests. See `CONTRIBUTING.md` and `docs/GITFLOW.md` for the complete workflow and commit convention.
+All changes enter protected branches through pull requests. See `CONTRIBUTING.md`, `docs/GITFLOW.md`, and `docs/ENTERPRISE_SDLC.md` for the complete Scrum delivery lifecycle, engineering gates, and commit convention.
+
+The enterprise pipeline validates PR governance, static quality, unit and contract behavior, adversarial security, dependencies and licenses, CodeQL findings, container vulnerabilities, SBOM, provenance, environment approval, immutable publication, and optional runtime smoke tests.
 
 ## Quality
 

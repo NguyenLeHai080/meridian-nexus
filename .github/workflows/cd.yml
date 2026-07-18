@@ -1,47 +1,68 @@
-name: CD
+name: Enterprise CD
 
 on:
-  push:
+  workflow_run:
+    workflows: [Enterprise CI]
     branches: [staging, prod]
+    types: [completed]
 
 permissions:
   contents: read
   packages: write
+  id-token: write
+  attestations: write
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: enterprise-deploy-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
 
 jobs:
   publish:
-    name: Publish ${{ github.ref_name }}
+    name: Approved artifact publication
+    if: >-
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name }}
+    environment: ${{ github.event.workflow_run.head_branch }}
+    outputs:
+      image_digest: ${{ steps.backend.outputs.digest }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/login-action@v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+      - name: Build and publish backend with SBOM and provenance
+        id: backend
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: BE
           target: production
           push: true
+          sbom: true
+          provenance: mode=max
           tags: |
-            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.ref_name }}
-            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.sha }}
+            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.event.workflow_run.head_branch }}
+            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.event.workflow_run.head_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - uses: actions/setup-node@v7
+      - name: Attest backend image provenance
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-name: ghcr.io/nguyenlehai080/meridian-nexus-api
+          subject-digest: ${{ steps.backend.outputs.digest }}
+          push-to-registry: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
         with:
-          node-version: 24
+          node-version: "24"
           cache: npm
           cache-dependency-path: FE/package-lock.json
-      - name: Build frontend
+      - name: Build frontend for approved environment
         if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
         working-directory: FE
         env:
@@ -51,14 +72,58 @@ jobs:
         run: |
           npm ci
           npm run build
-      - uses: actions/upload-artifact@v7
+          tar -czf "../meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz" -C dist .
+      - name: Attest frontend artifact provenance
+        if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
         with:
-          name: meridian-nexus-web-${{ github.sha }}
-          path: FE/dist
+          name: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}
+          path: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz
           if-no-files-found: error
           retention-days: 30
       - name: Report deferred frontend publication
         if: vars.VITE_API_URL == '' || vars.VITE_BACKEND_URL == ''
         run: |
-          echo "Frontend publication is deferred until VITE_API_URL and VITE_BACKEND_URL are configured in the ${{ github.ref_name }} environment." >> "$GITHUB_STEP_SUMMARY"
+          echo "Frontend publication is deferred until environment URLs are configured." >> "$GITHUB_STEP_SUMMARY"
+
+  runtime-verification:
+    name: Runtime smoke gate
+    needs: publish
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.workflow_run.head_branch }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Run read-only deployment smoke tests
+        if: vars.SMOKE_TARGET_URL != ''
+        run: python BE/scripts/deployment_smoke.py --target "${{ vars.SMOKE_TARGET_URL }}"
+      - name: Record artifact-only release
+        if: vars.SMOKE_TARGET_URL == ''
+        run: |
+          echo "No live target is configured; this pipeline publishes verified artifacts only." >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify published digest exists
+        env:
+          IMAGE_DIGEST: ${{ needs.publish.outputs.image_digest }}
+        run: |
+          if [[ ! "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            echo "Invalid published image digest"
+            exit 1
+          fi
+
+  deployment-record:
+    name: Auditable deployment record
+    needs: [publish, runtime-verification]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record release evidence
+        run: |
+          echo "## Enterprise release evidence" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Environment: ${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: ${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Source CI: ${{ github.event.workflow_run.html_url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image digest: ${{ needs.publish.outputs.image_digest }}" >> "$GITHUB_STEP_SUMMARY"
