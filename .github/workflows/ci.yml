@@ -54,6 +54,10 @@ jobs:
   frontend-quality:
     name: Frontend quality
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: http://127.0.0.1:8000/api/v1
+      VITE_BACKEND_URL: http://127.0.0.1:8000
+      VITE_APP_NAME: Meridian Nexus
     defaults:
       run:
         working-directory: FE
