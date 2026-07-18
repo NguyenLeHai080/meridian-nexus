@@ -1,12 +1,25 @@
 name: Bug
-description: Report a reproducible defect
+description: Report a reproducible defect with impact and regression evidence
 title: "fix: "
-labels: ["bug"]
+labels: ["type: bug", "status: triage"]
 body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        [
+          "P0 - Outage or active security incident",
+          "P1 - Major business impact",
+          "P2 - Normal defect",
+          "P3 - Minor defect",
+        ]
+    validations:
+      required: true
   - type: textarea
     id: behavior
     attributes:
-      label: Observed behavior
+      label: Observed behavior and impact
     validations:
       required: true
   - type: textarea
@@ -24,5 +37,22 @@ body:
   - type: textarea
     id: evidence
     attributes:
-      label: Logs and evidence
-      description: Remove credentials, tokens, cookies, and personal data before posting.
+      label: Sanitized logs and evidence
+      description: Remove credentials, tokens, cookies, customer data, and personal data.
+  - type: textarea
+    id: regression
+    attributes:
+      label: Regression test and rollback expectation
+    validations:
+      required: true
+  - type: checkboxes
+    id: triage
+    attributes:
+      label: Triage readiness
+      options:
+        - label: Impact and affected environment are identified
+          required: true
+        - label: Reproduction is deterministic or evidence explains why it is intermittent
+          required: true
+        - label: Security incident handling has been considered
+          required: true

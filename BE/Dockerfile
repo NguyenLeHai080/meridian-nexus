@@ -1,4 +1,4 @@
-FROM python:3.13-slim AS base
+FROM python:3.13-alpine@sha256:399babc8b49529dabfd9c922f2b5eea81d611e4512e3ed250d75bd2e7683f4b0 AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -10,7 +10,8 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --requirement requirements.txt
 
-RUN useradd --create-home --uid 10001 northstar
+RUN addgroup --gid 10001 northstar \
+    && adduser --disabled-password --uid 10001 --ingroup northstar northstar
 
 FROM base AS development
 COPY requirements-dev.txt ./
