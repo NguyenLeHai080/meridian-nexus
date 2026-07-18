@@ -1,0 +1,46 @@
+{
+  "account": "Tài khoản",
+  "bag": "Giỏ hàng",
+  "contact": "Liên hệ",
+  "emailAddress": "Địa chỉ email",
+  "explore": "Khám phá",
+  "help": "Hỗ trợ",
+  "join": "Đăng ký",
+  "language": "Ngôn ngữ",
+  "orderHistory": "Lịch sử đơn hàng",
+  "signIn": "Đăng nhập",
+  "notFoundTitle": "Trang này không tồn tại.",
+  "returnHome": "Về trang chủ",
+  "primaryNavigation": "Điều hướng chính",
+  "overview": "Tổng quan",
+  "signOut": "Đăng xuất",
+  "errors": {
+    "eyebrow": "Lỗi ứng dụng",
+    "title": "Đã xảy ra sự cố.",
+    "reload": "Tải lại ứng dụng"
+  },
+  "workspace": {
+    "eyebrow": "Tổng quan không gian làm việc",
+    "welcome": "Chào {{name}}.",
+    "operational": "Tất cả hệ thống hoạt động bình thường",
+    "foundation": "Nền tảng / v1.0",
+    "description": "Core ứng dụng đang hoạt động. Hãy thêm nghiệp vụ dưới dạng module độc lập trong khi định danh, giao tiếp và UI dùng chung vẫn ổn định.",
+    "modules": {
+      "identity": {
+        "name": "Định danh",
+        "detail": "Xác thực và kiểm soát truy cập",
+        "status": "Hoạt động"
+      },
+      "operations": {
+        "name": "Vận hành",
+        "detail": "Sẵn sàng cho module nghiệp vụ đầu tiên",
+        "status": "Sẵn sàng"
+      },
+      "intelligence": {
+        "name": "Phân tích",
+        "detail": "Báo cáo và hỗ trợ quyết định",
+        "status": "Kế hoạch"
+      }
+    }
+  }
+}

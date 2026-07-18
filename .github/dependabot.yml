@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /FE
+    schedule:
+      interval: weekly
+    target-branch: dev
+    labels: ["dependencies", "frontend"]
+  - package-ecosystem: pip
+    directory: /BE
+    schedule:
+      interval: weekly
+    target-branch: dev
+    labels: ["dependencies", "backend"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: dev
+    labels: ["dependencies", "ci"]

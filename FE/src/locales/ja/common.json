@@ -1,0 +1,38 @@
+{
+  "account": "アカウント",
+  "bag": "バッグ",
+  "contact": "お問い合わせ",
+  "emailAddress": "メールアドレス",
+  "explore": "見る",
+  "help": "ヘルプ",
+  "join": "登録",
+  "language": "言語",
+  "orderHistory": "注文履歴",
+  "signIn": "ログイン",
+  "notFoundTitle": "このページは存在しません。",
+  "returnHome": "ホームへ戻る",
+  "primaryNavigation": "メインナビゲーション",
+  "overview": "概要",
+  "signOut": "ログアウト",
+  "errors": {
+    "eyebrow": "アプリケーションエラー",
+    "title": "問題が発生しました。",
+    "reload": "アプリを再読み込み"
+  },
+  "workspace": {
+    "eyebrow": "ワークスペース概要",
+    "welcome": "ようこそ、{{name}}さん。",
+    "operational": "すべてのシステムは正常です",
+    "foundation": "基盤 / v1.0",
+    "description": "アプリケーションコアは稼働中です。認証、通信、共通UIを安定させたまま、業務機能を独立したモジュールとして追加できます。",
+    "modules": {
+      "identity": { "name": "認証", "detail": "認証とアクセス制御", "status": "稼働中" },
+      "operations": {
+        "name": "運用",
+        "detail": "最初の業務モジュールを追加できます",
+        "status": "準備完了"
+      },
+      "intelligence": { "name": "分析", "detail": "レポートと意思決定支援", "status": "計画中" }
+    }
+  }
+}

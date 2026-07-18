@@ -1,0 +1,212 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    email_verified_at DATETIME NULL,
+    password VARCHAR(255) NOT NULL,
+    remember_token VARCHAR(100) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    label VARCHAR(100) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS permissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    label VARCHAR(150) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS role_user (
+    role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (role_id, user_id)
+);
+-- statement
+CREATE TABLE IF NOT EXISTS permission_role (
+    permission_id INTEGER NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
+    role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    PRIMARY KEY (permission_id, role_id)
+);
+-- statement
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(120) NOT NULL,
+    slug VARCHAR(140) NOT NULL UNIQUE,
+    description TEXT NULL,
+    translations JSON NULL,
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_id INTEGER NULL REFERENCES categories(id) ON DELETE SET NULL,
+    name VARCHAR(180) NOT NULL,
+    slug VARCHAR(200) NOT NULL UNIQUE,
+    sku VARCHAR(80) NOT NULL UNIQUE,
+    excerpt VARCHAR(300) NULL,
+    description TEXT NULL,
+    translations JSON NULL,
+    price NUMERIC(15,2) NOT NULL,
+    sale_price NUMERIC(15,2) NULL,
+    stock INTEGER NOT NULL DEFAULT 0,
+    images JSON NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'draft',
+    is_featured BOOLEAN NOT NULL DEFAULT 0,
+    published_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL
+);
+-- statement
+CREATE TABLE IF NOT EXISTS promotions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(150) NOT NULL,
+    translations JSON NULL,
+    code VARCHAR(50) NULL UNIQUE,
+    type VARCHAR(20) NOT NULL,
+    value NUMERIC(15,2) NOT NULL,
+    minimum_order NUMERIC(15,2) NOT NULL DEFAULT 0,
+    starts_at DATETIME NULL,
+    ends_at DATETIME NULL,
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author_id INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    title VARCHAR(200) NOT NULL,
+    slug VARCHAR(220) NOT NULL UNIQUE,
+    excerpt VARCHAR(350) NULL,
+    content TEXT NOT NULL,
+    translations JSON NULL,
+    cover_image VARCHAR(2048) NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'draft',
+    published_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL
+);
+-- statement
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(30) NULL,
+    subject VARCHAR(180) NOT NULL,
+    message TEXT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'new',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    number VARCHAR(30) NOT NULL UNIQUE,
+    user_id INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    customer_name VARCHAR(120) NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
+    customer_phone VARCHAR(30) NULL,
+    shipping_address JSON NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+    payment_status VARCHAR(30) NOT NULL DEFAULT 'unpaid',
+    subtotal NUMERIC(15,2) NOT NULL,
+    discount NUMERIC(15,2) NOT NULL DEFAULT 0,
+    shipping_fee NUMERIC(15,2) NOT NULL DEFAULT 0,
+    total NUMERIC(15,2) NOT NULL,
+    notes TEXT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id INTEGER NULL REFERENCES products(id) ON DELETE SET NULL,
+    product_name VARCHAR(180) NOT NULL,
+    sku VARCHAR(80) NOT NULL,
+    unit_price NUMERIC(15,2) NOT NULL,
+    quantity INTEGER NOT NULL,
+    total NUMERIC(15,2) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    public_token VARCHAR(64) NOT NULL UNIQUE,
+    customer_id INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    assigned_to INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    guest_name VARCHAR(120) NULL,
+    guest_email VARCHAR(255) NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'open',
+    last_message_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_id INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    sender_type VARCHAR(20) NOT NULL,
+    body TEXT NOT NULL,
+    read_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS site_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key VARCHAR(120) NOT NULL UNIQUE,
+    value JSON NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS auth_sessions (
+    token_hash VARCHAR(64) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at DATETIME NOT NULL,
+    last_seen_at DATETIME NOT NULL,
+    ip_hash VARCHAR(64) NOT NULL,
+    user_agent_hash VARCHAR(64) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE INDEX IF NOT EXISTS auth_sessions_user_id_index ON auth_sessions(user_id);
+-- statement
+CREATE INDEX IF NOT EXISTS auth_sessions_expires_at_index ON auth_sessions(expires_at);
+-- statement
+CREATE TABLE IF NOT EXISTS idempotency_records (
+    key_hash VARCHAR(64) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    request_hash VARCHAR(64) NOT NULL,
+    response_json TEXT NOT NULL,
+    status_code INTEGER NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- statement
+CREATE TABLE IF NOT EXISTS security_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event VARCHAR(100) NOT NULL,
+    user_id INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+    email_hash VARCHAR(64) NULL,
+    ip_hash VARCHAR(64) NOT NULL,
+    request_id VARCHAR(64) NOT NULL,
+    metadata JSON NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

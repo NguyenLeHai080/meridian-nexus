@@ -1,0 +1,46 @@
+{
+  "account": "Account",
+  "bag": "Bag",
+  "contact": "Contact",
+  "emailAddress": "Email address",
+  "explore": "Explore",
+  "help": "Help",
+  "join": "Join",
+  "language": "Language",
+  "orderHistory": "Order history",
+  "signIn": "Sign in",
+  "notFoundTitle": "This route has no destination.",
+  "returnHome": "Return home",
+  "primaryNavigation": "Primary navigation",
+  "overview": "Overview",
+  "signOut": "Sign out",
+  "errors": {
+    "eyebrow": "Application error",
+    "title": "Something went wrong.",
+    "reload": "Reload workspace"
+  },
+  "workspace": {
+    "eyebrow": "Workspace overview",
+    "welcome": "Welcome, {{name}}.",
+    "operational": "All systems operational",
+    "foundation": "Foundation / v1.0",
+    "description": "Your application core is online. Add business capabilities as independent modules while identity, transport, and shared UI remain stable.",
+    "modules": {
+      "identity": {
+        "name": "Identity",
+        "detail": "Authentication and access controls",
+        "status": "Active"
+      },
+      "operations": {
+        "name": "Operations",
+        "detail": "Ready for your first business module",
+        "status": "Ready"
+      },
+      "intelligence": {
+        "name": "Intelligence",
+        "detail": "Reporting and decision support",
+        "status": "Planned"
+      }
+    }
+  }
+}

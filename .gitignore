@@ -1,0 +1,32 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Frontend
+FE/node_modules/
+FE/dist/
+FE/coverage/
+*.tsbuildinfo
+
+# Backend
+BE/.venv/
+BE/.pytest_cache/
+BE/.ruff_cache/
+BE/__pycache__/
+BE/**/*.py[cod]
+BE/*.sqlite
+BE/*.sqlite-shm
+BE/*.sqlite-wal
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+tmp/
+temp/

@@ -1,0 +1,38 @@
+{
+  "account": "계정",
+  "bag": "장바구니",
+  "contact": "문의",
+  "emailAddress": "이메일 주소",
+  "explore": "둘러보기",
+  "help": "도움말",
+  "join": "가입",
+  "language": "언어",
+  "orderHistory": "주문 내역",
+  "signIn": "로그인",
+  "notFoundTitle": "페이지를 찾을 수 없습니다.",
+  "returnHome": "홈으로 돌아가기",
+  "primaryNavigation": "기본 탐색",
+  "overview": "개요",
+  "signOut": "로그아웃",
+  "errors": {
+    "eyebrow": "애플리케이션 오류",
+    "title": "문제가 발생했습니다.",
+    "reload": "앱 다시 불러오기"
+  },
+  "workspace": {
+    "eyebrow": "워크스페이스 개요",
+    "welcome": "환영합니다, {{name}}님.",
+    "operational": "모든 시스템이 정상 작동 중입니다",
+    "foundation": "기반 / v1.0",
+    "description": "애플리케이션 코어가 작동 중입니다. 인증, 통신과 공통 UI를 안정적으로 유지하면서 비즈니스 기능을 독립 모듈로 추가하세요.",
+    "modules": {
+      "identity": { "name": "인증", "detail": "인증 및 접근 제어", "status": "활성" },
+      "operations": {
+        "name": "운영",
+        "detail": "첫 비즈니스 모듈을 추가할 준비가 되었습니다",
+        "status": "준비됨"
+      },
+      "intelligence": { "name": "분석", "detail": "보고 및 의사결정 지원", "status": "계획됨" }
+    }
+  }
+}

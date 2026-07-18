@@ -1,0 +1,1 @@
+"""Role-protected administration module."""
