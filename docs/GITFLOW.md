@@ -27,7 +27,7 @@ git commit -m "feat(homepage): build storefront hero #123"
 git push -u origin feat/homepage
 ```
 
-After review, squash merge the feature into `dev`. Promote the tested commit through pull requests from `dev` to `staging` and from `staging` to `prod` using **merge commits**. The merge commit preserves ancestry between long-lived environment branches.
+After review, merge the feature into `dev` using a **merge commit**. Promote the tested commit through pull requests from `dev` to `staging` and from `staging` to `prod` using merge commits. This keeps feature and environment ancestry visible in the repository graph.
 
 The staging promotion represents the Sprint increment selected for QA, not an arbitrary collection of partially completed stories. The production promotion requires Product Owner acceptance, QA evidence, release approval, and a confirmed rollback path.
 
@@ -53,7 +53,7 @@ Use merge commits for both synchronization PRs so the production lineage remains
 
 - Never introduce an intentional defect into `prod` to practice hotfixes.
 - Run practice exercises in a disposable branch or training repository.
-- Squash short-lived branches into `dev`; never squash promotions between `dev`, `staging`, and `prod`.
+- Use merge commits for short-lived branches into `dev` and for every environment promotion.
 - Tag production releases using semantic versions such as `v1.2.0`.
 - Roll back by redeploying a previously verified immutable image tag, not by editing a running container.
 - Promote the same commit and immutable artifact through environments; never rebuild different source for production.

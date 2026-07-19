@@ -12,6 +12,11 @@ TITLE_PATTERN = re.compile(
 SHORT_LIVED_BRANCH_PATTERN = re.compile(
     r"^(feat|fix|refactor|docs|chore|test|ci|security)/[a-z0-9][a-z0-9._-]*$"
 )
+DEPENDABOT_BRANCH_PATTERN = re.compile(r"^dependabot/[A-Za-z0-9_./-]+$")
+DEPENDABOT_TITLE_PATTERN = re.compile(
+    r"^(?:chore|build)\(deps(?:-dev)?\): (?:bump|update) .+$",
+    re.IGNORECASE,
+)
 REQUIRED_SECTIONS = (
     "## Related issue",
     "## Change",
@@ -67,11 +72,32 @@ def validate_issue(issue_id: str) -> None:
         fail(f"#{issue_id} refers to a pull request, not an issue")
 
 
+def validate_dependabot_pull_request(
+    author: str, title: str, head_ref: str, base_ref: str
+) -> bool:
+    if author != "dependabot[bot]":
+        return False
+
+    if base_ref != "dev":
+        fail("Dependabot pull requests may target dev only")
+    if not DEPENDABOT_BRANCH_PATTERN.fullmatch(head_ref):
+        fail("Dependabot must use a GitHub-managed dependabot/* branch")
+    if not DEPENDABOT_TITLE_PATTERN.fullmatch(title):
+        fail("Dependabot title must use chore(deps) or chore(deps-dev)")
+
+    print(f"Dependabot governance passed for {head_ref} -> {base_ref}")
+    return True
+
+
 def main() -> None:
     title = os.environ.get("PR_TITLE", "").strip()
     body = os.environ.get("PR_BODY", "")
     head_ref = os.environ.get("HEAD_REF", "")
     base_ref = os.environ.get("BASE_REF", "")
+    author = os.environ.get("PR_AUTHOR", "")
+
+    if validate_dependabot_pull_request(author, title, head_ref, base_ref):
+        return
 
     title_match = TITLE_PATTERN.fullmatch(title)
     if not title_match:
