@@ -76,6 +76,18 @@ Issue and DoR
 
 High and critical changes require explicit security review, focused regression evidence, and a rollback rehearsal or documented impossibility rationale.
 
+## Dependency automation
+
+Dependabot targets `dev` only. Compatible minor and patch updates are grouped by
+ecosystem, while major updates remain isolated for breaking-change review. Each
+ecosystem is limited to three concurrent pull requests and runs in a staggered
+weekly window.
+
+Bot-authored dependency pull requests receive a narrow governance exception:
+the verified `dependabot[bot]` identity may omit a manually created issue and
+Definition of Done. Branch, target, and Conventional Commit title checks remain
+mandatory, and every quality, security, approval, and release gate still runs.
+
 ## Hotfix control
 
 P0 and approved P1 incidents may use `hotfix/<name>` from `prod`. The PR still requires an issue, tests, CI, approval, and production environment authorization. After deployment, merge `prod` back into `staging` and `dev` using merge commits, then hold a blameless incident review.

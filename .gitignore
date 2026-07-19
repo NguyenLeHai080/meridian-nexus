@@ -16,6 +16,8 @@ BE/.pytest_cache/
 BE/.ruff_cache/
 BE/__pycache__/
 BE/**/*.py[cod]
+.github/scripts/__pycache__/
+.github/scripts/*.py[cod]
 BE/*.sqlite
 BE/*.sqlite-shm
 BE/*.sqlite-wal
