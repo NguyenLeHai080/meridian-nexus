@@ -5,7 +5,9 @@ from sqlalchemy import text
 
 from northstar.core.auth import DbSession
 from northstar.core.database import json_value
-from northstar.core.http import ApiError, pagination_meta, success
+from northstar.core.http import ApiError, limiter, pagination_meta, success
+from northstar.core.network import client_ip
+from northstar.core.security import hash_context
 from northstar.core.serialization import (
     SUPPORTED_LOCALES,
     iso,
@@ -208,6 +210,9 @@ def post(slug: str, request: Request, db: DbSession) -> Response:
 
 @router.post("/contact", status_code=201)
 def contact(payload: ContactInput, request: Request, db: DbSession) -> Response:
+    email = str(payload.email).lower()
+    limiter.hit(f"contact-ip:{client_ip(request)}", 10, 3600)
+    limiter.hit(f"contact-email:{hash_context(email)}", 5, 3600)
     result = db.execute(
         text(
             "INSERT INTO contact_messages(name,email,phone,subject,message,status,created_at,updated_at) "
@@ -215,7 +220,6 @@ def contact(payload: ContactInput, request: Request, db: DbSession) -> Response:
         ),
         {**payload.model_dump(), "now": datetime.now(UTC)},
     )
+    contact_id = int(result.scalar_one())
     db.commit()
-    return success(
-        request, {"id": int(result.scalar_one())}, "Your message has been received.", 201
-    )
+    return success(request, {"id": contact_id}, "Your message has been received.", 201)

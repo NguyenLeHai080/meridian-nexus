@@ -1,7 +1,8 @@
 import secrets
 from datetime import UTC, datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Path, Request, Response
 from sqlalchemy import text
 
 from northstar.core.auth import DbSession, optional_user
@@ -12,17 +13,19 @@ from northstar.core.serialization import conversation_dict
 from northstar.schemas import ChatReplyInput, ChatStartInput
 
 router = APIRouter(prefix="/api/v1/storefront/chat", tags=["chat"])
+ChatToken = Annotated[str, Path(pattern=r"^[a-f0-9]{64}$")]
 
 
 def _find(db: DbSession, token: str) -> dict[str, object]:
     token_hash = hash_secret(token)
+    migrated_hash = hash_secret(token_hash)
     row = (
         db.execute(
             text(
-                "SELECT * FROM conversations "
-                "WHERE public_token=:token_hash OR public_token=:legacy_token LIMIT 1"
+                "SELECT * FROM conversations WHERE public_token IN (:token_hash,:migrated_hash) "
+                "LIMIT 1"
             ),
-            {"token_hash": token_hash, "legacy_token": token},
+            {"token_hash": token_hash, "migrated_hash": migrated_hash},
         )
         .mappings()
         .first()
@@ -30,7 +33,7 @@ def _find(db: DbSession, token: str) -> dict[str, object]:
     if row is None:
         raise ApiError("Conversation not found.", "NOT_FOUND", 404)
     conversation = dict(row)
-    if conversation["public_token"] != token_hash:
+    if conversation["public_token"] == migrated_hash:
         db.execute(
             text("UPDATE conversations SET public_token=:token_hash WHERE id=:id"),
             {"token_hash": token_hash, "id": conversation["id"]},
@@ -91,14 +94,14 @@ def start(payload: ChatStartInput, request: Request, db: DbSession) -> Response:
 
 
 @router.get("/{token}")
-def show(token: str, request: Request, db: DbSession) -> Response:
+def show(token: ChatToken, request: Request, db: DbSession) -> Response:
     conversation = _find(db, token)
     _authorize(conversation, optional_user(request, db))
     return success(request, conversation_dict(db, conversation, access_token=token))
 
 
 @router.post("/{token}")
-def reply(token: str, payload: ChatReplyInput, request: Request, db: DbSession) -> Response:
+def reply(token: ChatToken, payload: ChatReplyInput, request: Request, db: DbSession) -> Response:
     conversation = _find(db, token)
     now = datetime.now(UTC)
     user = optional_user(request, db)

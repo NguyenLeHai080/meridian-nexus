@@ -615,7 +615,7 @@ def contacts(request: Request, db: DbSession, page: Page = 1, per_page: PerPage 
     )
 
 
-@router.patch("/contacts/{contact_id}", dependencies=[Depends(permission("contacts.view"))])
+@router.patch("/contacts/{contact_id}", dependencies=[Depends(permission("contacts.manage"))])
 def update_contact(
     contact_id: int, payload: ContactStatusInput, request: Request, db: DbSession
 ) -> Response:

@@ -3,6 +3,8 @@ from pydantic import ValidationError
 
 from northstar.core.config import Settings
 from northstar.main import app
+from northstar.modules.auth import router as auth_router_module
+from northstar.modules.storefront import router as storefront_router_module
 
 ORIGIN = "http://localhost:5173"
 
@@ -99,6 +101,43 @@ def test_request_size_limit_and_login_throttling() -> None:
         )
         assert blocked.status_code == 429
         assert blocked.json()["error"]["code"] == "RATE_LIMITED"
+
+
+def test_sensitive_endpoints_use_context_specific_throttles(monkeypatch) -> None:
+    class RecordingLimiter:
+        def __init__(self) -> None:
+            self.keys: list[str] = []
+
+        def hit(self, key: str, _limit: int, _seconds: int) -> None:
+            self.keys.append(key)
+
+    auth_limiter = RecordingLimiter()
+    contact_limiter = RecordingLimiter()
+    monkeypatch.setattr(auth_router_module, "limiter", auth_limiter)
+    monkeypatch.setattr(storefront_router_module, "limiter", contact_limiter)
+
+    with TestClient(app) as client:
+        headers = csrf_headers(client)
+        client.post(
+            "/api/v1/auth/login",
+            headers=headers,
+            json={"email": "distributed@example.com", "password": "WrongPassword123!"},
+        )
+        client.post(
+            "/api/v1/storefront/contact",
+            headers=headers,
+            json={
+                "name": "Rate Limit Tester",
+                "email": "contact-rate-limit@example.com",
+                "subject": "Endpoint throttle",
+                "message": "Verify dedicated abuse controls.",
+            },
+        )
+
+    assert any(key.startswith("login-account:") for key in auth_limiter.keys)
+    assert any(key.startswith("login-account-ip:") for key in auth_limiter.keys)
+    assert any(key.startswith("contact-ip:") for key in contact_limiter.keys)
+    assert any(key.startswith("contact-email:") for key in contact_limiter.keys)
 
 
 def test_insecure_production_configuration_fails_closed() -> None:
