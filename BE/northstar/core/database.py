@@ -1,10 +1,11 @@
+import hashlib
 import json
 import sqlite3
 from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
 
-from sqlalchemy import Engine, create_engine, event, text
+from sqlalchemy import Connection, Engine, create_engine, event, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from northstar.core.config import get_settings
@@ -74,10 +75,22 @@ def initialize_database() -> None:
                 sql = _migration_sql(statement.strip(), connection.dialect.name)
                 if sql:
                     connection.exec_driver_sql(sql)
+            if migration.name == "005_hash_legacy_conversation_tokens.sql":
+                _hash_legacy_conversation_tokens(connection)
             connection.execute(
                 text("INSERT INTO python_migrations (name) VALUES (:name)"),
                 {"name": migration.name},
             )
+
+
+def _hash_legacy_conversation_tokens(connection: Connection) -> None:
+    rows = connection.execute(text("SELECT id,public_token FROM conversations")).mappings().all()
+    for row in rows:
+        token_hash = hashlib.sha256(str(row["public_token"]).encode()).hexdigest()
+        connection.execute(
+            text("UPDATE conversations SET public_token=:token_hash WHERE id=:id"),
+            {"token_hash": token_hash, "id": row["id"]},
+        )
 
 
 def _migration_sql(sql: str, dialect: str) -> str:
