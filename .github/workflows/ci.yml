@@ -30,12 +30,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Test pull request governance rules
+        run: python .github/scripts/test_validate_pull_request.py
       - name: Validate issue, branch, title, and Definition of Done
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_REF: ${{ github.head_ref }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: python .github/scripts/validate_pull_request.py
