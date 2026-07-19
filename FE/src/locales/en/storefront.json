@@ -1,4 +1,5 @@
 {
+  "pagination": { "label": "Pagination", "previous": "Previous page", "next": "Next page" },
   "home": {
     "featuredEyebrow": "Curated essentials",
     "featuredTitle": "Made for the everyday.",
@@ -108,7 +109,16 @@
     "orders": "{{count}} orders",
     "viewItems": "View {{count}} item(s)",
     "empty": "No orders yet",
-    "emptyText": "Your considered collection will appear here."
+    "emptyText": "Your considered collection will appear here.",
+    "mfaTitle": "Multi-factor authentication",
+    "mfaText": "Protect this account with an authenticator app, especially before receiving staff access.",
+    "currentPassword": "Current password",
+    "startMfa": "Set up MFA",
+    "mfaSecret": "Authenticator secret:",
+    "mfaCode": "Six-digit code",
+    "confirmMfa": "Enable MFA",
+    "recoveryCodes": "Recovery codes",
+    "recoveryWarning": "Store these one-time codes securely. They will not be shown again."
   },
   "status": {
     "pending": "Pending",

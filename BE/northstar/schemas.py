@@ -25,6 +25,39 @@ class RegisterInput(LoginInput):
         return self
 
 
+class EmailActionInput(StrictModel):
+    email: EmailStr
+
+
+class TokenInput(StrictModel):
+    token: str = Field(min_length=32, max_length=200)
+
+
+class PasswordResetInput(TokenInput):
+    email: EmailStr
+    password: str = Field(min_length=12, max_length=200)
+    password_confirmation: str = Field(min_length=12, max_length=200)
+
+    @model_validator(mode="after")
+    def passwords_match(self) -> "PasswordResetInput":
+        if self.password != self.password_confirmation:
+            raise ValueError("Passwords do not match.")
+        return self
+
+
+class MfaCodeInput(StrictModel):
+    code: str = Field(min_length=6, max_length=32)
+
+
+class MfaSetupInput(StrictModel):
+    password: str = Field(min_length=1, max_length=200)
+    current_code: str | None = Field(default=None, min_length=6, max_length=32)
+
+
+class MfaChallengeInput(MfaCodeInput):
+    challenge_token: str = Field(min_length=32, max_length=200)
+
+
 class ContactInput(StrictModel):
     name: str = Field(min_length=1, max_length=120)
     email: EmailStr
@@ -82,7 +115,7 @@ class ProductInput(StrictModel):
     price: Decimal = Field(ge=0)
     sale_price: Decimal | None = Field(default=None, ge=0)
     stock: int = Field(ge=0)
-    images: list[str] = Field(default_factory=list, max_length=20)
+    images: list[HttpUrl] = Field(default_factory=list, max_length=20)
     excerpt: str | None = Field(default=None, max_length=300)
     description: str | None = None
     is_featured: bool = False

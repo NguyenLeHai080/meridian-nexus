@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { usePermissions } from '@/core/auth/use-permission'
 import { formatDate } from '@/modules/commerce/utils/format'
 import { AdminHeader } from '../components/AdminHeader'
+import { AdminPagination } from '../components/AdminPagination'
 import { AdminStatusSelect } from '../components/AdminStatusSelect'
 import { PostCreateForm } from '../components/forms/PostCreateForm'
 import {
@@ -22,9 +23,11 @@ export function AdminContentPage() {
   const canManageContent = permissions.includes('content.manage')
   const canViewContacts = permissions.includes('contacts.view')
   const [creating, setCreating] = useState(false)
+  const [postsPage, setPostsPage] = useState(1)
+  const [contactsPage, setContactsPage] = useState(1)
   const metadata = useAdminMetadata(creating || canViewContacts)
-  const posts = useAdminPosts(canManageContent)
-  const contacts = useAdminContacts(canViewContacts)
+  const posts = useAdminPosts(postsPage, canManageContent)
+  const contacts = useAdminContacts(contactsPage, canViewContacts)
   const createPost = useCreatePost(() => setCreating(false))
   const deletePost = useDeletePost()
   const updateContact = useUpdateContact()
@@ -56,10 +59,10 @@ export function AdminContentPage() {
               <span>{t('content.journal')}</span>
               <h2>{t('content.articles')}</h2>
             </div>
-            <span>{t('content.entries', { count: posts.data?.length ?? 0 })}</span>
+            <span>{t('content.entries', { count: posts.data?.pagination.total ?? 0 })}</span>
           </header>
           <div className="admin-content-list">
-            {posts.data?.map((post) => (
+            {posts.data?.items.map((post) => (
               <article key={post.id}>
                 <div>
                   <span className={`status status--${post.status}`}>
@@ -85,6 +88,7 @@ export function AdminContentPage() {
               </article>
             ))}
           </div>
+          <AdminPagination pagination={posts.data?.pagination} onPageChange={setPostsPage} />
         </section>
       )}
       {canViewContacts && (
@@ -94,10 +98,10 @@ export function AdminContentPage() {
               <span>{t('content.inbox')}</span>
               <h2>{t('content.enquiries')}</h2>
             </div>
-            <span>{t('content.messages', { count: contacts.data?.length ?? 0 })}</span>
+            <span>{t('content.messages', { count: contacts.data?.pagination.total ?? 0 })}</span>
           </header>
           <div className="admin-contact-list">
-            {contacts.data?.map((contact) => (
+            {contacts.data?.items.map((contact) => (
               <article key={contact.id}>
                 <div>
                   <strong>{contact.subject}</strong>
@@ -117,6 +121,7 @@ export function AdminContentPage() {
               </article>
             ))}
           </div>
+          <AdminPagination pagination={contacts.data?.pagination} onPageChange={setContactsPage} />
         </section>
       )}
     </>

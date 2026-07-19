@@ -69,8 +69,12 @@ export const usePost = (slug?: string) => {
   })
 }
 
-export const useCustomerOrders = () =>
-  useQuery({ queryKey: queryKeys.commerce.customerOrders, queryFn: getCustomerOrders })
+export const useCustomerOrders = (page: number) =>
+  useQuery({
+    queryKey: queryKeys.commerce.customerOrders(page),
+    queryFn: () => getCustomerOrders(page),
+    placeholderData: keepPreviousData,
+  })
 
 export const useSendContact = (onSent?: () => void) =>
   useMutation({ mutationFn: sendContact, onSuccess: onSent })
@@ -80,7 +84,7 @@ export const useCheckout = (onCompleted?: () => void) => {
   return useMutation({
     mutationFn: checkout,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.commerce.customerOrders })
+      queryClient.invalidateQueries({ queryKey: queryKeys.commerce.customerOrders() })
       onCompleted?.()
     },
   })

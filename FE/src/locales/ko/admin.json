@@ -1,5 +1,6 @@
 {
   "loading": "데이터 불러오는 중...",
+  "pagination": { "label": "페이지 이동", "previous": "이전 페이지", "next": "다음 페이지" },
   "sidebar": {
     "office": "커머스 운영실",
     "storefront": "스토어 보기",

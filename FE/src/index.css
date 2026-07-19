@@ -2101,6 +2101,76 @@ a {
   min-width: 0;
   margin-top: 55px;
 }
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 0 0;
+}
+
+.admin-pagination button {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: inherit;
+  cursor: pointer;
+}
+
+.admin-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.store-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.store-pagination button {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.store-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.profile-mfa {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.profile-mfa form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.profile-mfa input,
+.profile-mfa button {
+  min-height: 2.75rem;
+  padding: 0 0.8rem;
+}
+
+.profile-mfa code {
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
 .admin-panel > header {
   display: flex;
   justify-content: space-between;

@@ -11,6 +11,9 @@ export function LoginPage() {
       <p className="auth-card__lead">{t('login.lead')}</p>
       <LoginForm />
       <p className="auth-card__switch">
+        <Link to="/forgot-password">{t('login.forgotPassword')}</Link>
+      </p>
+      <p className="auth-card__switch">
         {t('login.newHere')} <Link to="/register">{t('login.createAccount')}</Link>
       </p>
     </section>

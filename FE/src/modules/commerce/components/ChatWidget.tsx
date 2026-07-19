@@ -28,7 +28,9 @@ export function ChatWidget() {
       { message, guest: guestInput },
       {
         onSuccess: (data) => {
-          setToken(data.token)
+          if (data.token !== null) {
+            setToken(data.token)
+          }
           setMessage('')
         },
       },

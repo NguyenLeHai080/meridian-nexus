@@ -13,13 +13,29 @@ class Settings(BaseSettings):
     app_debug: bool = False
     app_key: str = Field(min_length=32)
     database_url: str = "sqlite:////data/database.sqlite"
+    database_pool_size: int = Field(default=10, ge=1, le=100)
+    database_max_overflow: int = Field(default=20, ge=0, le=200)
+    redis_url: str | None = None
     frontend_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
+    frontend_url: str = "http://localhost:5173"
     trusted_hosts: Annotated[list[str], NoDecode] = ["localhost", "127.0.0.1", "testserver"]
     session_cookie: str = "northstar_session"
     session_lifetime_minutes: int = 60
     cookie_secure: bool = False
     api_rate_limit: int = 240
     login_rate_limit: int = 8
+    trusted_proxy_networks: Annotated[list[str], NoDecode] = []
+    session_bind_ip: bool = False
+    session_bind_user_agent: bool = True
+    require_email_verification: bool = False
+    require_privileged_mfa: bool = False
+    auth_action_token_minutes: int = Field(default=30, ge=5, le=1440)
+    smtp_host: str | None = None
+    smtp_port: int = Field(default=587, ge=1, le=65535)
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_from_email: str | None = None
+    smtp_starttls: bool = True
     max_request_bytes: int = Field(default=1_048_576, ge=16_384, le=10_485_760)
     session_touch_interval_seconds: int = Field(default=300, ge=60, le=3600)
     enable_hsts: bool = False
@@ -28,7 +44,7 @@ class Settings(BaseSettings):
         "default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
     )
 
-    @field_validator("frontend_origins", "trusted_hosts", mode="before")
+    @field_validator("frontend_origins", "trusted_hosts", "trusted_proxy_networks", mode="before")
     @classmethod
     def split_csv(cls, value: object) -> object:
         if isinstance(value, str):
@@ -49,8 +65,20 @@ class Settings(BaseSettings):
             raise ValueError("Production SESSION_COOKIE must use the __Host- prefix.")
         if any(not origin.startswith("https://") for origin in self.frontend_origins):
             raise ValueError("Every production frontend origin must use HTTPS.")
+        if not self.frontend_url.startswith("https://"):
+            raise ValueError("Production FRONTEND_URL must use HTTPS.")
         if any(host in {"localhost", "127.0.0.1", "testserver"} for host in self.trusted_hosts):
             raise ValueError("Local hosts are not allowed in production.")
+        if not self.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
+            raise ValueError("Production DATABASE_URL must use PostgreSQL.")
+        if not self.redis_url or not self.redis_url.startswith(("redis://", "rediss://")):
+            raise ValueError("Production REDIS_URL must use Redis.")
+        if not self.require_email_verification:
+            raise ValueError("REQUIRE_EMAIL_VERIFICATION must be true in production.")
+        if not self.require_privileged_mfa:
+            raise ValueError("REQUIRE_PRIVILEGED_MFA must be true in production.")
+        if not self.smtp_host or not self.smtp_from_email:
+            raise ValueError("SMTP_HOST and SMTP_FROM_EMAIL are required in production.")
         return self
 
 

@@ -9,11 +9,13 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from northstar.core.bootstrap import bootstrap_reference_data
 from northstar.core.config import get_settings
-from northstar.core.database import initialize_database
+from northstar.core.database import engine, initialize_database
 from northstar.core.http import (
+    ApiError,
     RequestSizeLimitMiddleware,
     SecurityMiddleware,
     install_exception_handlers,
+    limiter,
     success,
 )
 from northstar.modules.admin.router import router as admin_router
@@ -79,6 +81,19 @@ if settings.app_env == "local":
         return HTMLResponse(html)
 
 
+@app.get("/health/live")
+def liveness(request: Request):
+    return success(request, {"status": "ok"})
+
+
 @app.get("/health")
-def health(request: Request):
+@app.get("/health/ready")
+def readiness(request: Request):
+    try:
+        with engine.connect() as connection:
+            connection.exec_driver_sql("SELECT 1")
+    except Exception as error:
+        raise ApiError("Database is unavailable.", "DATABASE_UNAVAILABLE", 503) from error
+    if not limiter.is_healthy():
+        raise ApiError("Rate limiter is unavailable.", "RATE_LIMIT_UNAVAILABLE", 503)
     return success(request, {"status": "ok"})

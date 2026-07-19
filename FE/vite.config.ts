@@ -23,9 +23,16 @@ function securityPolicyPlugin(policy: string): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
-  const backendOrigin = new URL(env.VITE_BACKEND_URL).origin
-  const developmentScriptSource = mode === 'production' ? '' : " 'unsafe-inline'"
-  const developmentConnectSource = mode === 'production' ? '' : ' ws://localhost:*'
+  let backendOrigin = ''
+  if (!env.VITE_BACKEND_URL.startsWith('/')) {
+    backendOrigin = new URL(env.VITE_BACKEND_URL).origin
+  }
+  let developmentScriptSource = ''
+  let developmentConnectSource = ''
+  if (mode !== 'production') {
+    developmentScriptSource = " 'unsafe-inline'"
+    developmentConnectSource = ' ws://localhost:*'
+  }
   const contentSecurityPolicy = [
     "default-src 'self'",
     "base-uri 'self'",
