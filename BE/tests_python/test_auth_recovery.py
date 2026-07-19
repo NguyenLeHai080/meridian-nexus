@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from urllib.parse import parse_qs, urlparse
 
 import pyotp
@@ -71,10 +72,12 @@ def test_email_verification_and_password_recovery(monkeypatch) -> None:
             )
             assert mfa_setup.status_code == 200
             secret = mfa_setup.json()["data"]["secret"]
+            totp = pyotp.TOTP(secret)
+            current_step = int(datetime.now(UTC).timestamp()) // totp.interval
             mfa_confirm = client.post(
                 "/api/v1/auth/mfa/confirm",
                 headers=csrf_headers(client),
-                json={"code": pyotp.TOTP(secret).now()},
+                json={"code": totp.at((current_step - 1) * totp.interval)},
             )
             assert mfa_confirm.status_code == 200
             recovery_code = mfa_confirm.json()["data"]["recovery_codes"][0]
@@ -90,7 +93,7 @@ def test_email_verification_and_password_recovery(monkeypatch) -> None:
             )
             assert password_login.status_code == 202
             challenge_token = password_login.json()["data"]["challenge_token"]
-            totp_code = pyotp.TOTP(secret).now()
+            totp_code = totp.now()
             mfa_login = client.post(
                 "/api/v1/auth/mfa/challenge",
                 headers=csrf_headers(client),
@@ -111,6 +114,37 @@ def test_email_verification_and_password_recovery(monkeypatch) -> None:
                 },
             )
             assert replayed_code.status_code == 422
+
+            rotation = client.post(
+                "/api/v1/auth/mfa/setup",
+                headers=csrf_headers(client),
+                json={
+                    "password": "SecurePassword123!",
+                    "current_code": mfa_confirm.json()["data"]["recovery_codes"][1],
+                },
+            )
+            assert rotation.status_code == 200
+            assert rotation.json()["data"]["secret"] != secret
+
+            assert (
+                client.post("/api/v1/auth/logout", headers=csrf_headers(client)).status_code == 200
+            )
+            rotation_login = client.post(
+                "/api/v1/auth/login",
+                headers=csrf_headers(client),
+                json={"email": email, "password": "SecurePassword123!"},
+            )
+            assert rotation_login.status_code == 202
+            assert rotation_login.json()["data"]["mfa_required"] is True
+            rotation_challenge = client.post(
+                "/api/v1/auth/mfa/challenge",
+                headers=csrf_headers(client),
+                json={
+                    "challenge_token": rotation_login.json()["data"]["challenge_token"],
+                    "code": mfa_confirm.json()["data"]["recovery_codes"][2],
+                },
+            )
+            assert rotation_challenge.status_code == 200
 
             forgot = client.post(
                 "/api/v1/auth/forgot-password",

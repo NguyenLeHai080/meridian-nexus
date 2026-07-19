@@ -18,6 +18,7 @@ PERMISSIONS = {
     "chat.reply": "Reply to conversations",
     "content.manage": "Manage posts and content",
     "contacts.view": "View contact messages",
+    "contacts.manage": "Manage contact messages",
 }
 
 ROLE_PERMISSIONS = {
