@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { usePermission } from '@/core/auth/use-permission'
 import { useTranslation } from 'react-i18next'
 import { formatDate, formatMoney } from '@/modules/commerce/utils/format'
 import { AdminHeader } from '../components/AdminHeader'
+import { AdminPagination } from '../components/AdminPagination'
 import { AdminStatusSelect } from '../components/AdminStatusSelect'
 import { useAdminMetadata, useAdminOrders, useUpdateOrder } from '../hooks/use-admin-data'
 import { useAdminLabel } from '../hooks/use-admin-label'
@@ -10,7 +12,8 @@ export function AdminOrdersPage() {
   const { t } = useTranslation('admin')
   const label = useAdminLabel()
   const canManage = usePermission('orders.manage')
-  const orders = useAdminOrders()
+  const [page, setPage] = useState(1)
+  const orders = useAdminOrders(page)
   const metadata = useAdminMetadata()
   const updateOrder = useUpdateOrder()
 
@@ -27,7 +30,7 @@ export function AdminOrdersPage() {
             <span>{t('table.total')}</span>
             <span>{t('table.status')}</span>
           </div>
-          {orders.data?.map((order) => {
+          {orders.data?.items.map((order) => {
             let statusControl = <span>{label('status', order.status)}</span>
 
             if (canManage && metadata.data !== undefined) {
@@ -63,6 +66,7 @@ export function AdminOrdersPage() {
             )
           })}
         </div>
+        <AdminPagination pagination={orders.data?.pagination} onPageChange={setPage} />
       </section>
     </>
   )

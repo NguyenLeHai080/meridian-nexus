@@ -1,4 +1,5 @@
 {
+  "pagination": { "label": "ページ移動", "previous": "前のページ", "next": "次のページ" },
   "home": {
     "featuredEyebrow": "厳選された必需品",
     "featuredTitle": "毎日のために。",
@@ -108,7 +109,16 @@
     "orders": "{{count}}件の注文",
     "viewItems": "{{count}}点を見る",
     "empty": "注文はまだありません",
-    "emptyText": "選んだ商品がここに表示されます。"
+    "emptyText": "選んだ商品がここに表示されます。",
+    "mfaTitle": "多要素認証",
+    "mfaText": "認証アプリでアカウントを保護してください。スタッフ権限の付与前には必須です。",
+    "currentPassword": "現在のパスワード",
+    "startMfa": "MFAを設定",
+    "mfaSecret": "認証シークレット:",
+    "mfaCode": "6桁のコード",
+    "confirmMfa": "MFAを有効化",
+    "recoveryCodes": "リカバリーコード",
+    "recoveryWarning": "一度だけ使用できるコードを安全に保管してください。再表示されません。"
   },
   "status": {
     "pending": "保留中",

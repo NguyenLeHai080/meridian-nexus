@@ -9,10 +9,13 @@ from threading import Lock
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from redis import Redis
+from redis.exceptions import RedisError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from northstar.core.config import get_settings
+from northstar.core.network import client_ip
 
 logger = logging.getLogger("northstar.api")
 
@@ -77,11 +80,21 @@ class SlidingWindowLimiter:
     def __init__(self) -> None:
         self._events: dict[str, deque[float]] = defaultdict(deque)
         self._lock = Lock()
+        self._hits = 0
 
     def hit(self, key: str, limit: int, seconds: int) -> None:
         now = datetime.now(UTC).timestamp()
         threshold = now - seconds
         with self._lock:
+            self._hits += 1
+            if self._hits % 1024 == 0:
+                stale_keys = [
+                    event_key
+                    for event_key, event_values in self._events.items()
+                    if not event_values or event_values[-1] <= threshold
+                ]
+                for stale_key in stale_keys:
+                    self._events.pop(stale_key, None)
             events = self._events[key]
             while events and events[0] <= threshold:
                 events.popleft()
@@ -89,8 +102,76 @@ class SlidingWindowLimiter:
                 raise ApiError("Too many requests.", "RATE_LIMITED", 429)
             events.append(now)
 
+    def is_healthy(self) -> bool:
+        return True
 
-limiter = SlidingWindowLimiter()
+
+class RedisSlidingWindowLimiter:
+    _SCRIPT = """
+local key = KEYS[1]
+local now = tonumber(ARGV[1])
+local threshold = tonumber(ARGV[2])
+local limit = tonumber(ARGV[3])
+local ttl = tonumber(ARGV[4])
+local member = ARGV[5]
+redis.call('ZREMRANGEBYSCORE', key, '-inf', threshold)
+local count = redis.call('ZCARD', key)
+if count >= limit then
+    redis.call('PEXPIRE', key, ttl)
+    return 0
+end
+redis.call('ZADD', key, now, member)
+redis.call('PEXPIRE', key, ttl)
+return 1
+"""
+
+    def __init__(self, url: str, *, fail_closed: bool) -> None:
+        self._redis = Redis.from_url(url, decode_responses=True)
+        self._fail_closed = fail_closed
+        self._fallback = SlidingWindowLimiter()
+
+    def hit(self, key: str, limit: int, seconds: int) -> None:
+        now_ms = int(datetime.now(UTC).timestamp() * 1000)
+        try:
+            allowed = self._redis.eval(
+                self._SCRIPT,
+                1,
+                f"northstar:rate-limit:{key}",
+                now_ms,
+                now_ms - (seconds * 1000),
+                limit,
+                seconds * 1000,
+                f"{now_ms}:{secrets.token_hex(8)}",
+            )
+        except RedisError as error:
+            if self._fail_closed:
+                logger.error("Redis rate limiter unavailable", exc_info=error)
+                raise ApiError(
+                    "Service temporarily unavailable.", "RATE_LIMIT_UNAVAILABLE", 503
+                ) from error
+            self._fallback.hit(key, limit, seconds)
+            return
+        if int(allowed) != 1:
+            raise ApiError("Too many requests.", "RATE_LIMITED", 429)
+
+    def is_healthy(self) -> bool:
+        try:
+            return bool(self._redis.ping())
+        except RedisError:
+            return False
+
+
+def build_rate_limiter() -> SlidingWindowLimiter | RedisSlidingWindowLimiter:
+    settings = get_settings()
+    if settings.redis_url:
+        return RedisSlidingWindowLimiter(
+            settings.redis_url,
+            fail_closed=settings.app_env.lower() == "production",
+        )
+    return SlidingWindowLimiter()
+
+
+limiter = build_rate_limiter()
 
 
 class RequestTooLargeError(Exception):
@@ -157,9 +238,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             request_id = secrets.token_hex(16)
         request.state.request_id = request_id
 
-        client_ip = request.client.host if request.client is not None else "unknown"
+        request_client_ip = client_ip(request)
         try:
-            limiter.hit(f"api:{client_ip}", settings.api_rate_limit, 60)
+            limiter.hit(f"api:{request_client_ip}", settings.api_rate_limit, 60)
             if request.method not in {"GET", "HEAD", "OPTIONS"}:
                 origin = request.headers.get("Origin")
                 if origin not in settings.frontend_origins:

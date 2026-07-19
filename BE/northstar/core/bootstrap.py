@@ -71,8 +71,8 @@ def bootstrap_reference_data() -> None:
                 ).scalar_one()
                 db.execute(
                     text(
-                        "INSERT OR IGNORE INTO permission_role(permission_id,role_id) "
-                        "VALUES (:permission_id,:role_id)"
+                        "INSERT INTO permission_role(permission_id,role_id) "
+                        "VALUES (:permission_id,:role_id) ON CONFLICT DO NOTHING"
                     ),
                     {"permission_id": permission_id, "role_id": role_id},
                 )

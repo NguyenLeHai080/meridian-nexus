@@ -196,7 +196,7 @@ jobs:
 
   container-security:
     name: Container security gate
-    needs: [backend-static, backend-contract, backend-adversarial]
+    needs: [backend-static, backend-contract, backend-adversarial, frontend-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -212,6 +212,24 @@ jobs:
       - uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
           image-ref: meridian-nexus-api:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: false
+          severity: HIGH,CRITICAL
+      - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: FE
+          load: true
+          tags: meridian-nexus-web:ci
+          build-args: |
+            VITE_API_URL=/api/v1
+            VITE_BACKEND_URL=/
+            VITE_APP_NAME=Meridian Nexus
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: meridian-nexus-web:ci
           format: table
           exit-code: "1"
           ignore-unfixed: false

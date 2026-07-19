@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { usePermission } from '@/core/auth/use-permission'
 import { formatMoney } from '@/modules/commerce/utils/format'
 import { AdminHeader } from '../components/AdminHeader'
+import { AdminPagination } from '../components/AdminPagination'
 import { CategoryCreateForm } from '../components/forms/CategoryCreateForm'
 import { ProductCreateForm } from '../components/forms/ProductCreateForm'
 import {
@@ -18,7 +19,8 @@ export function AdminProductsPage() {
   const canManage = usePermission('products.manage')
   const [creatingProduct, setCreatingProduct] = useState(false)
   const [creatingCategory, setCreatingCategory] = useState(false)
-  const products = useAdminProducts()
+  const [page, setPage] = useState(1)
+  const products = useAdminProducts(page)
   const categories = useAdminCategories(creatingProduct)
   const metadata = useAdminMetadata(creatingProduct)
   const createProduct = useCreateProduct(() => setCreatingProduct(false))
@@ -65,7 +67,7 @@ export function AdminProductsPage() {
             <span>{t('table.stock')}</span>
             <span>{t('table.collection')}</span>
           </div>
-          {products.data?.map((product) => {
+          {products.data?.items.map((product) => {
             let stockClassName = ''
             if (product.stock <= 5) {
               stockClassName = 'stock-low'
@@ -85,6 +87,7 @@ export function AdminProductsPage() {
             )
           })}
         </div>
+        <AdminPagination pagination={products.data?.pagination} onPageChange={setPage} />
       </section>
     </>
   )

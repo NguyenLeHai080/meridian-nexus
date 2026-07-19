@@ -1,8 +1,15 @@
 import { z } from 'zod'
 
+const endpointSchema = z.string().refine((value) => {
+  if (value.startsWith('/')) {
+    return true
+  }
+  return z.url().safeParse(value).success
+}, 'Must be an absolute URL or a same-origin path')
+
 const environmentSchema = z.object({
-  VITE_API_URL: z.url(),
-  VITE_BACKEND_URL: z.url(),
+  VITE_API_URL: endpointSchema,
+  VITE_BACKEND_URL: endpointSchema,
   VITE_APP_NAME: z.string().trim().min(1).default('Northstar'),
 })
 

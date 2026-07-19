@@ -5,29 +5,48 @@ from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Query, Request, Response
 from sqlalchemy import text
 
 from northstar.core.auth import CurrentUser, DbSession
-from northstar.core.http import ApiError, success
+from northstar.core.http import ApiError, pagination_meta, success
 from northstar.core.security import hash_secret, require_idempotency_key
-from northstar.core.serialization import order_dict
+from northstar.core.serialization import order_dict, orders_dict
 from northstar.schemas import CheckoutInput, ProfileUpdateInput
 
 router = APIRouter(prefix="/api/v1/customer", tags=["customer"])
 
 
 @router.get("/orders")
-def orders(request: Request, db: DbSession, user: CurrentUser) -> Response:
+def orders(
+    request: Request,
+    db: DbSession,
+    user: CurrentUser,
+    page: int = Query(default=1, ge=1),
+    per_page: int = Query(default=10, ge=5, le=50),
+) -> Response:
+    total = int(
+        db.execute(
+            text("SELECT COUNT(*) FROM orders WHERE user_id=:user_id"),
+            {"user_id": user["id"]},
+        ).scalar_one()
+    )
     rows = (
         db.execute(
-            text("SELECT * FROM orders WHERE user_id=:user_id ORDER BY created_at DESC"),
-            {"user_id": user["id"]},
+            text(
+                "SELECT * FROM orders WHERE user_id=:user_id ORDER BY created_at DESC "
+                "LIMIT :limit OFFSET :offset"
+            ),
+            {"user_id": user["id"], "limit": per_page, "offset": (page - 1) * per_page},
         )
         .mappings()
         .all()
     )
-    return success(request, [order_dict(db, dict(row)) for row in rows])
+    return success(
+        request,
+        orders_dict(db, [dict(row) for row in rows]),
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 def _promotion_discount(db: DbSession, code: str | None, subtotal: Decimal) -> Decimal:
@@ -37,7 +56,7 @@ def _promotion_discount(db: DbSession, code: str | None, subtotal: Decimal) -> D
     row = (
         db.execute(
             text(
-                "SELECT * FROM promotions WHERE UPPER(code)=:code AND is_active=1 "
+                "SELECT * FROM promotions WHERE UPPER(code)=:code AND is_active=TRUE "
                 "AND (starts_at IS NULL OR starts_at<=:now) AND (ends_at IS NULL OR ends_at>=:now)"
             ),
             {"code": code.upper(), "now": now},
@@ -131,7 +150,7 @@ def checkout(
                 "INSERT INTO orders(number,user_id,customer_name,customer_email,customer_phone,"
                 "shipping_address,status,payment_status,subtotal,discount,shipping_fee,total,created_at,updated_at) "
                 "VALUES (:number,:user_id,:name,:email,:phone,:address,'pending','unpaid',"
-                ":subtotal,:discount,:shipping,:total,:now,:now)"
+                ":subtotal,:discount,:shipping,:total,:now,:now) RETURNING id"
             ),
             {
                 "number": number,
@@ -147,7 +166,7 @@ def checkout(
                 "now": now,
             },
         )
-        order_id = int(order_result.lastrowid)
+        order_id = int(order_result.scalar_one())
         for line in lines:
             updated = db.execute(
                 text(
