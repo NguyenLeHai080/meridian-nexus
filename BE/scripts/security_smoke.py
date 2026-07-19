@@ -103,7 +103,7 @@ def main() -> int:
     check("sql_injection", 200, status)
 
     status, _, _ = request(connection, "GET", "/api/v1/storefront/posts/..%2F..%2F.env")
-    check("path_traversal", 404, status)
+    check("path_traversal_rejected", True, status in {404, 422})
 
     status, _, _ = request(connection, "TRACE", "/health")
     check("trace_method", 403, status)

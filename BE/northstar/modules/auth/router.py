@@ -113,28 +113,35 @@ def _action_token_user(
     return dict(row)
 
 
+def _matching_totp_step(secret: str, code: str) -> int | None:
+    normalized = code.strip().upper().replace("-", "")
+    if not normalized.isdigit() or len(normalized) != 6:
+        return None
+    totp = pyotp.TOTP(secret)
+    current_step = int(datetime.now(UTC).timestamp()) // totp.interval
+    for offset in (-1, 0, 1):
+        candidate_step = current_step + offset
+        candidate_code = totp.at(candidate_step * totp.interval)
+        if secrets.compare_digest(candidate_code, normalized):
+            return candidate_step
+    return None
+
+
 def _verify_mfa_code(db: DbSession, user_id: int, encrypted_secret: str, code: str) -> bool:
     normalized = code.strip().upper().replace("-", "")
-    if normalized.isdigit() and len(normalized) == 6:
-        secret = decrypt_secret(encrypted_secret)
-        totp = pyotp.TOTP(secret)
-        current_step = int(datetime.now(UTC).timestamp()) // totp.interval
+    candidate_step = _matching_totp_step(decrypt_secret(encrypted_secret), normalized)
+    if candidate_step is not None:
         last_used_step = db.execute(
             text("SELECT mfa_last_used_step FROM users WHERE id=:user_id"),
             {"user_id": user_id},
         ).scalar_one_or_none()
-        for offset in (-1, 0, 1):
-            candidate_step = current_step + offset
-            candidate_code = totp.at(candidate_step * totp.interval)
-            if not secrets.compare_digest(candidate_code, normalized):
-                continue
-            if last_used_step is not None and int(last_used_step) >= candidate_step:
-                return False
-            db.execute(
-                text("UPDATE users SET mfa_last_used_step=:step WHERE id=:user_id"),
-                {"step": candidate_step, "user_id": user_id},
-            )
-            return True
+        if last_used_step is not None and int(last_used_step) >= candidate_step:
+            return False
+        db.execute(
+            text("UPDATE users SET mfa_last_used_step=:step WHERE id=:user_id"),
+            {"step": candidate_step, "user_id": user_id},
+        )
+        return True
     recovery_hash = hash_context(f"mfa-recovery:{normalized}")
     result = db.execute(
         text("DELETE FROM mfa_recovery_codes WHERE user_id=:user_id AND code_hash=:code_hash"),
@@ -267,7 +274,12 @@ def login(payload: LoginInput, request: Request, db: DbSession) -> Response:
     email = payload.email.lower()
     limiter.hit(f"login-ip:{request_client_ip}", settings.login_rate_limit * 3, 60)
     limiter.hit(
-        f"login-account:{hash_context(email)}:{request_client_ip}",
+        f"login-account:{hash_context(email)}",
+        settings.login_rate_limit * 3,
+        300,
+    )
+    limiter.hit(
+        f"login-account-ip:{hash_context(email)}:{request_client_ip}",
         settings.login_rate_limit,
         60,
     )
@@ -335,6 +347,7 @@ def resend_verification(
     db: DbSession,
 ) -> Response:
     email = payload.email.lower()
+    limiter.hit(f"verify-email-account:{hash_context(email)}", 6, 3600)
     limiter.hit(f"verify-email:{hash_context(email)}:{client_ip(request)}", 3, 3600)
     row = (
         db.execute(
@@ -385,6 +398,7 @@ def forgot_password(
     db: DbSession,
 ) -> Response:
     email = payload.email.lower()
+    limiter.hit(f"forgot-password-account:{hash_context(email)}", 6, 3600)
     limiter.hit(f"forgot-password:{hash_context(email)}:{client_ip(request)}", 3, 3600)
     user_id = db.execute(
         text("SELECT id FROM users WHERE email=:email LIMIT 1"), {"email": email}
@@ -415,7 +429,10 @@ def reset_password(payload: PasswordResetInput, request: Request, db: DbSession)
     user_id = int(token_row["user_id"])
     now = datetime.now(UTC)
     db.execute(
-        text("UPDATE users SET password=:password,updated_at=:now WHERE id=:user_id"),
+        text(
+            "UPDATE users SET password=:password,mfa_pending_secret=NULL,updated_at=:now "
+            "WHERE id=:user_id"
+        ),
         {"password": password_hash.hash(payload.password), "now": now, "user_id": user_id},
     )
     db.execute(text("DELETE FROM auth_sessions WHERE user_id=:user_id"), {"user_id": user_id})
@@ -487,20 +504,12 @@ def mfa_setup(
             raise ApiError("The multi-factor code is invalid.", "INVALID_MFA_CODE", 422)
     secret = pyotp.random_base32()
     db.execute(
-        text(
-            "UPDATE users SET mfa_secret=:secret,mfa_enabled_at=NULL,mfa_last_used_step=NULL,"
-            "updated_at=:now "
-            "WHERE id=:user_id"
-        ),
+        text("UPDATE users SET mfa_pending_secret=:secret,updated_at=:now WHERE id=:user_id"),
         {
             "secret": encrypt_secret(secret),
             "now": datetime.now(UTC),
             "user_id": user["id"],
         },
-    )
-    db.execute(
-        text("DELETE FROM mfa_recovery_codes WHERE user_id=:user_id"),
-        {"user_id": user["id"]},
     )
     db.commit()
     uri = pyotp.TOTP(secret).provisioning_uri(
@@ -520,18 +529,23 @@ def mfa_confirm(
 ) -> Response:
     limiter.hit(f"mfa-confirm:{user['id']}:{client_ip(request)}", 10, 600)
     encrypted_secret = db.execute(
-        text("SELECT mfa_secret FROM users WHERE id=:user_id"), {"user_id": user["id"]}
+        text("SELECT mfa_pending_secret FROM users WHERE id=:user_id"),
+        {"user_id": user["id"]},
     ).scalar_one_or_none()
     if encrypted_secret is None:
         raise ApiError("Start multi-factor setup first.", "MFA_SETUP_REQUIRED", 409)
     secret = decrypt_secret(str(encrypted_secret))
-    if not pyotp.TOTP(secret).verify(payload.code, valid_window=1):
+    matched_step = _matching_totp_step(secret, payload.code)
+    if matched_step is None:
         raise ApiError("The multi-factor code is invalid.", "INVALID_MFA_CODE", 422)
     now = datetime.now(UTC)
     recovery_codes = [secrets.token_hex(5).upper() for _index in range(10)]
     db.execute(
-        text("UPDATE users SET mfa_enabled_at=:now,updated_at=:now WHERE id=:user_id"),
-        {"now": now, "user_id": user["id"]},
+        text(
+            "UPDATE users SET mfa_secret=mfa_pending_secret,mfa_pending_secret=NULL,"
+            "mfa_enabled_at=:now,mfa_last_used_step=:step,updated_at=:now WHERE id=:user_id"
+        ),
+        {"now": now, "step": matched_step, "user_id": user["id"]},
     )
     db.execute(
         text("DELETE FROM mfa_recovery_codes WHERE user_id=:user_id"),

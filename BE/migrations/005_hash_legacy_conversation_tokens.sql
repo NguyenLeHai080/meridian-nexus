@@ -1,0 +1,1 @@
+-- The Python data migration converts every stored token representation to a one-way digest.
