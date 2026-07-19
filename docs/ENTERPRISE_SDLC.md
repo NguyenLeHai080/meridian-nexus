@@ -21,7 +21,7 @@ The Scrum Master facilitates these controls but must not silently act as Product
 1. **Refinement:** clarify value, acceptance criteria, dependencies, security impact, and estimate.
 2. **Sprint planning:** select only items meeting the Definition of Ready and define the Sprint Goal.
 3. **Implementation:** create a short-lived branch from `dev`, keep the PR draft while incomplete, and update tests with code.
-4. **Review:** move the PR out of draft, obtain CI evidence and CODEOWNER review, then squash into `dev`.
+4. **Review:** move the PR out of draft, obtain CI evidence and CODEOWNER review, then merge into `dev` with a merge commit.
 5. **QA promotion:** merge `dev` into `staging` with a merge commit after the Sprint increment is coherent.
 6. **Validation:** QA performs acceptance, regression, exploratory, performance, and security checks against staging.
 7. **Release:** merge `staging` into `prod` with a merge commit after release approval and rollback confirmation.

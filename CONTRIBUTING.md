@@ -48,7 +48,7 @@ Allowed types are `feat`, `fix`, `refactor`, `docs`, `chore`, `style`, `perf`, `
 - Complete every required PR section and at least five Definition of Done checks.
 - Classify risk and include acceptance, regression, security, rollout, monitoring, and rollback evidence.
 - Do not merge while required checks or review are pending.
-- Squash merge feature, fix, refactor, documentation, and CI branches into `dev` so the validated PR title becomes the final commit.
+- Merge feature, fix, refactor, documentation, and CI branches into `dev` with a merge commit so their reviewed ancestry remains visible.
 - Merge promotion PRs from `dev` to `staging`, from `staging` to `prod`, and hotfix synchronization PRs with a merge commit. Squashing long-lived branches breaks their ancestry and causes avoidable conflicts on the next promotion.
 
 ## Enterprise gates
