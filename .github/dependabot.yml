@@ -4,17 +4,44 @@ updates:
     directory: /FE
     schedule:
       interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Asia/Bangkok
     target-branch: dev
+    open-pull-requests-limit: 3
+    rebase-strategy: disabled
     labels: ["dependencies", "frontend"]
+    groups:
+      frontend-compatible:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: pip
     directory: /BE
     schedule:
       interval: weekly
+      day: monday
+      time: "03:15"
+      timezone: Asia/Bangkok
     target-branch: dev
+    open-pull-requests-limit: 3
+    rebase-strategy: disabled
     labels: ["dependencies", "backend"]
+    groups:
+      backend-compatible:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+      day: monday
+      time: "03:30"
+      timezone: Asia/Bangkok
     target-branch: dev
+    open-pull-requests-limit: 3
+    rebase-strategy: disabled
     labels: ["dependencies", "ci"]
+    groups:
+      actions-compatible:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
