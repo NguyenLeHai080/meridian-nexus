@@ -9,7 +9,8 @@ import { useLogin } from '../hooks/use-auth-mutations'
 
 export function LoginForm() {
   const { t } = useTranslation('auth')
-  const mutation = useLogin()
+  const { passwordMutation, mfaMutation, challengeToken } = useLogin()
+  const [mfaCode, setMfaCode] = useState('')
   const loginSchema = createLoginSchema(t)
   const {
     register,
@@ -20,10 +21,39 @@ export function LoginForm() {
     defaultValues: { email: '', password: '' },
   })
 
+  if (challengeToken !== null) {
+    return (
+      <form
+        className="auth-form"
+        onSubmit={(event) => {
+          event.preventDefault()
+          mfaMutation.mutate(mfaCode)
+        }}
+      >
+        <p>{t('login.mfaText')}</p>
+        <TextField
+          label={t('login.mfaCode')}
+          value={mfaCode}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          onChange={(event) => setMfaCode(event.target.value)}
+        />
+        {mfaMutation.isError && (
+          <div className="form-alert" role="alert">
+            {getApiErrorMessage(mfaMutation.error)}
+          </div>
+        )}
+        <Button type="submit" loading={mfaMutation.isPending}>
+          {t('login.mfaSubmit')}
+        </Button>
+      </form>
+    )
+  }
+
   return (
     <form
       className="auth-form"
-      onSubmit={handleSubmit((values) => mutation.mutate(values))}
+      onSubmit={handleSubmit((values) => passwordMutation.mutate(values))}
       noValidate
     >
       <TextField
@@ -40,14 +70,15 @@ export function LoginForm() {
         error={errors.password?.message}
         {...register('password')}
       />
-      {mutation.isError && (
+      {passwordMutation.isError && (
         <div className="form-alert" role="alert">
-          {getApiErrorMessage(mutation.error)}
+          {getApiErrorMessage(passwordMutation.error)}
         </div>
       )}
-      <Button type="submit" loading={mutation.isPending}>
+      <Button type="submit" loading={passwordMutation.isPending}>
         {t('login.submit')}
       </Button>
     </form>
   )
 }
+import { useState } from 'react'

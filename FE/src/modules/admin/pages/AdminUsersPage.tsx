@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { usePermission } from '@/core/auth/use-permission'
 import { useTranslation } from 'react-i18next'
 import { AdminHeader } from '../components/AdminHeader'
+import { AdminPagination } from '../components/AdminPagination'
 import { useAdminRoles, useAdminUsers, useUpdateUserRoles } from '../hooks/use-admin-data'
 import { useAdminLabel } from '../hooks/use-admin-label'
 
@@ -8,7 +10,8 @@ export function AdminUsersPage() {
   const { t } = useTranslation('admin')
   const label = useAdminLabel()
   const canManage = usePermission('users.manage_roles')
-  const users = useAdminUsers()
+  const [page, setPage] = useState(1)
+  const users = useAdminUsers(page)
   const roles = useAdminRoles()
   const updateRoles = useUpdateUserRoles()
 
@@ -23,7 +26,7 @@ export function AdminUsersPage() {
             <span>{t('table.currentRole')}</span>
             <span>{t('table.access')}</span>
           </div>
-          {users.data?.map((user) => {
+          {users.data?.items.map((user) => {
             let currentRole = ''
             if (user.roles.length > 0) {
               currentRole = user.roles[0]
@@ -57,6 +60,7 @@ export function AdminUsersPage() {
             )
           })}
         </div>
+        <AdminPagination pagination={users.data?.pagination} onPageChange={setPage} />
       </section>
     </>
   )

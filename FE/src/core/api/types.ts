@@ -26,3 +26,8 @@ export interface PaginationMeta {
     total: number
   }
 }
+
+export interface PaginatedResult<T> {
+  items: T[]
+  pagination: PaginationMeta['pagination']
+}

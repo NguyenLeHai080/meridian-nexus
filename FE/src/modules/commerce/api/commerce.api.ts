@@ -1,5 +1,5 @@
 import { apiClient, createIdempotencyKey } from '@/core/api/client'
-import type { ApiResponse, PaginationMeta } from '@/core/api/types'
+import type { ApiResponse, PaginatedResult, PaginationMeta } from '@/core/api/types'
 import type { Conversation, Order, Post, Product, StorefrontHome } from '../types/commerce.types'
 
 export async function getStorefrontHome(): Promise<StorefrontHome> {
@@ -37,9 +37,15 @@ export async function sendContact(input: Record<string, string>): Promise<void> 
   await apiClient.post('/storefront/contact', input)
 }
 
-export async function getCustomerOrders(): Promise<Order[]> {
-  const { data } = await apiClient.get<ApiResponse<Order[]>>('/customer/orders')
-  return data.data
+export async function getCustomerOrders(page: number): Promise<PaginatedResult<Order>> {
+  const { data } = await apiClient.get<ApiResponse<Order[]>>('/customer/orders', {
+    params: { page, per_page: 10 },
+  })
+  const meta = data.meta as PaginationMeta | undefined
+  if (meta === undefined) {
+    throw new Error('Customer order response is missing pagination metadata')
+  }
+  return { items: data.data, pagination: meta.pagination }
 }
 
 export async function checkout(input: {

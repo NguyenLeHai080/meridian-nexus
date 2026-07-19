@@ -26,10 +26,10 @@ export const useAdminDashboard = () =>
     staleTime: 60_000,
   })
 
-export const useAdminProducts = () =>
+export const useAdminProducts = (page: number) =>
   useQuery({
-    queryKey: queryKeys.admin.products,
-    queryFn: adminApi.products,
+    queryKey: queryKeys.admin.products(page),
+    queryFn: () => adminApi.products(page),
     staleTime: adminListStaleTime,
   })
 
@@ -46,7 +46,7 @@ export function useCreateProduct(onCreated?: () => void) {
   return useMutation({
     mutationFn: (input: CreateProductInput) => adminApi.createProduct(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.products })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.products() })
       onCreated?.()
     },
   })
@@ -63,10 +63,10 @@ export function useCreateCategory(onCreated?: () => void) {
   })
 }
 
-export const useAdminOrders = () =>
+export const useAdminOrders = (page: number) =>
   useQuery({
-    queryKey: queryKeys.admin.orders,
-    queryFn: adminApi.orders,
+    queryKey: queryKeys.admin.orders(page),
+    queryFn: () => adminApi.orders(page),
     staleTime: adminListStaleTime,
   })
 
@@ -75,7 +75,7 @@ export function useUpdateOrder() {
   return useMutation({
     mutationFn: ({ id, input }: { id: number; input: UpdateOrderInput }) =>
       adminApi.updateOrder(id, input),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.orders }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.orders() }),
   })
 }
 
@@ -97,10 +97,10 @@ export function useCreatePromotion(onCreated?: () => void) {
   })
 }
 
-export const useAdminUsers = () =>
+export const useAdminUsers = (page: number) =>
   useQuery({
-    queryKey: queryKeys.admin.users,
-    queryFn: adminApi.users,
+    queryKey: queryKeys.admin.users(page),
+    queryFn: () => adminApi.users(page),
     staleTime: adminListStaleTime,
   })
 
@@ -111,14 +111,14 @@ export function useUpdateUserRoles() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, roles }: { id: number; roles: string[] }) => adminApi.updateRoles(id, roles),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.users }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.users() }),
   })
 }
 
-export const useAdminConversations = () =>
+export const useAdminConversations = (page: number) =>
   useQuery({
-    queryKey: queryKeys.admin.conversations,
-    queryFn: adminApi.conversations,
+    queryKey: queryKeys.admin.conversations(page),
+    queryFn: () => adminApi.conversations(page),
     staleTime: 30_000,
     refetchInterval: 30_000,
   })
@@ -134,22 +134,22 @@ export function useReplyToConversation(id: number | null) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (message: string) => adminApi.reply(id!, message),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.conversations }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.conversations() }),
   })
 }
 
-export const useAdminPosts = (enabled = true) =>
+export const useAdminPosts = (page: number, enabled = true) =>
   useQuery({
-    queryKey: queryKeys.admin.posts,
-    queryFn: adminApi.posts,
+    queryKey: queryKeys.admin.posts(page),
+    queryFn: () => adminApi.posts(page),
     staleTime: adminListStaleTime,
     enabled,
   })
 
-export const useAdminContacts = (enabled = true) =>
+export const useAdminContacts = (page: number, enabled = true) =>
   useQuery({
-    queryKey: queryKeys.admin.contacts,
-    queryFn: adminApi.contacts,
+    queryKey: queryKeys.admin.contacts(page),
+    queryFn: () => adminApi.contacts(page),
     staleTime: 60_000,
     enabled,
   })
@@ -159,7 +159,7 @@ export function useCreatePost(onCreated?: () => void) {
   return useMutation({
     mutationFn: (input: CreatePostInput) => adminApi.createPost(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.posts })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.posts() })
       onCreated?.()
     },
   })
@@ -169,7 +169,7 @@ export function useDeletePost() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: adminApi.deletePost,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.posts }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.posts() }),
   })
 }
 
@@ -178,6 +178,6 @@ export function useUpdateContact() {
   return useMutation({
     mutationFn: ({ id, status }: { id: number; status: ContactMessage['status'] }) =>
       adminApi.updateContact(id, status),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.contacts }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.admin.contacts() }),
   })
 }

@@ -1,8 +1,10 @@
 import hashlib
 import secrets
+from base64 import urlsafe_b64encode
 from datetime import UTC, datetime, timedelta
 
 import bcrypt
+from cryptography.fernet import Fernet, InvalidToken
 from fastapi import Request, Response
 from pwdlib import PasswordHash
 from sqlalchemy import text
@@ -10,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from northstar.core.config import get_settings
 from northstar.core.http import ApiError
+from northstar.core.network import client_ip
 
 password_hash = PasswordHash.recommended()
 DUMMY_PASSWORD_HASH = password_hash.hash("not-a-real-user-password")
@@ -22,6 +25,23 @@ def hash_secret(value: str) -> str:
 def hash_context(value: str) -> str:
     settings = get_settings()
     return hashlib.sha256(f"{settings.app_key}:{value}".encode()).hexdigest()
+
+
+def encrypt_secret(value: str) -> str:
+    settings = get_settings()
+    key = urlsafe_b64encode(hashlib.sha256(settings.app_key.encode()).digest())
+    return Fernet(key).encrypt(value.encode()).decode()
+
+
+def decrypt_secret(value: str) -> str:
+    settings = get_settings()
+    key = urlsafe_b64encode(hashlib.sha256(settings.app_key.encode()).digest())
+    try:
+        return Fernet(key).decrypt(value.encode()).decode()
+    except InvalidToken as error:
+        raise ApiError(
+            "Multi-factor configuration is invalid.", "MFA_CONFIGURATION_ERROR", 500
+        ) from error
 
 
 def verify_password(password: str, encoded: str) -> bool:
@@ -42,7 +62,7 @@ def create_session(db: Session, request: Request, response: Response, user_id: i
     token = secrets.token_urlsafe(48)
     now = datetime.now(UTC)
     expires_at = now + timedelta(minutes=settings.session_lifetime_minutes)
-    client_ip = request.client.host if request.client is not None else "unknown"
+    request_client_ip = client_ip(request)
     user_agent = request.headers.get("User-Agent", "unknown")
     current_token = request.cookies.get(settings.session_cookie)
     if current_token:
@@ -61,7 +81,7 @@ def create_session(db: Session, request: Request, response: Response, user_id: i
             "user_id": user_id,
             "expires_at": expires_at,
             "last_seen_at": now,
-            "ip_hash": hash_context(client_ip),
+            "ip_hash": hash_context(request_client_ip),
             "user_agent_hash": hash_context(user_agent),
         },
     )
@@ -130,16 +150,20 @@ def session_user_id(db: Session, request: Request) -> int | None:
         )
         db.commit()
         return None
-    client_ip = request.client.host if request.client is not None else "unknown"
+    request_client_ip = client_ip(request)
     user_agent = request.headers.get("User-Agent", "unknown")
-    if not secrets.compare_digest(str(row["ip_hash"]), hash_context(client_ip)):
+    if settings.session_bind_ip and not secrets.compare_digest(
+        str(row["ip_hash"]), hash_context(request_client_ip)
+    ):
         db.execute(
             text("DELETE FROM auth_sessions WHERE token_hash=:token_hash"),
             {"token_hash": hash_secret(token)},
         )
         db.commit()
         return None
-    if not secrets.compare_digest(str(row["user_agent_hash"]), hash_context(user_agent)):
+    if settings.session_bind_user_agent and not secrets.compare_digest(
+        str(row["user_agent_hash"]), hash_context(user_agent)
+    ):
         db.execute(
             text("DELETE FROM auth_sessions WHERE token_hash=:token_hash"),
             {"token_hash": hash_secret(token)},

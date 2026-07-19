@@ -1,5 +1,6 @@
 {
   "loading": "Đang tải dữ liệu...",
+  "pagination": { "label": "Phân trang", "previous": "Trang trước", "next": "Trang sau" },
   "sidebar": {
     "office": "Trung tâm vận hành",
     "storefront": "Xem cửa hàng",

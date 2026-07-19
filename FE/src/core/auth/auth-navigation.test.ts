@@ -8,6 +8,7 @@ function user(permissions: string[]): AuthenticatedUser {
     name: 'Test User',
     email: 'test@example.com',
     email_verified_at: null,
+    mfa_enabled: true,
     created_at: '2026-07-18T00:00:00Z',
     roles: [],
     permissions,
@@ -21,5 +22,12 @@ describe('getPostLoginPath', () => {
 
   it('sends customers to their storefront profile', () => {
     expect(getPostLoginPath(user([]))).toBe('/profile')
+  })
+
+  it('sends privileged users without MFA to enrollment', () => {
+    const privileged = user(['dashboard.view'])
+    privileged.roles = ['admin']
+    privileged.mfa_enabled = false
+    expect(getPostLoginPath(privileged)).toBe('/profile')
   })
 })

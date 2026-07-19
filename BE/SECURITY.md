@@ -15,4 +15,4 @@
 - Production image excludes test, lint, audit, and multipart packages.
 - Non-root container runtime and a persistent database volume with least-privilege ownership.
 
-Production deployments must terminate TLS at a trusted reverse proxy, use a secret manager, rotate `APP_KEY` through a planned session invalidation, use Redis for distributed rate limits, centralize audit logs, enable MFA for privileged users, back up the database, and run dependency/image scanning in CI.
+Production deployments must terminate TLS at a trusted reverse proxy, use a secret manager, rotate `APP_KEY` through planned session invalidation and MFA re-enrollment, use Redis for distributed rate limits, centralize audit logs, enforce MFA for privileged users, back up PostgreSQL, and run dependency/image scanning in CI.

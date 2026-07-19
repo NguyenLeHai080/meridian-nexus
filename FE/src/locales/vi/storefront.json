@@ -1,4 +1,5 @@
 {
+  "pagination": { "label": "Phân trang", "previous": "Trang trước", "next": "Trang sau" },
   "home": {
     "featuredEyebrow": "Sản phẩm chọn lọc",
     "featuredTitle": "Dành cho cuộc sống hằng ngày.",
@@ -108,7 +109,16 @@
     "orders": "{{count}} đơn hàng",
     "viewItems": "Xem {{count}} sản phẩm",
     "empty": "Chưa có đơn hàng",
-    "emptyText": "Các sản phẩm bạn chọn sẽ xuất hiện tại đây."
+    "emptyText": "Các sản phẩm bạn chọn sẽ xuất hiện tại đây.",
+    "mfaTitle": "Xác thực đa yếu tố",
+    "mfaText": "Bảo vệ tài khoản bằng ứng dụng xác thực, đặc biệt trước khi được cấp quyền nhân viên.",
+    "currentPassword": "Mật khẩu hiện tại",
+    "startMfa": "Thiết lập MFA",
+    "mfaSecret": "Mã bí mật xác thực:",
+    "mfaCode": "Mã sáu chữ số",
+    "confirmMfa": "Bật MFA",
+    "recoveryCodes": "Mã khôi phục",
+    "recoveryWarning": "Lưu các mã dùng một lần này ở nơi an toàn. Chúng sẽ không được hiển thị lại."
   },
   "status": {
     "pending": "Đang chờ",

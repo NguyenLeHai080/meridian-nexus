@@ -1,17 +1,20 @@
 import json
 from datetime import UTC, datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from northstar.core.auth import CurrentUser, DbSession, permission, serialize_user
-from northstar.core.http import ApiError, success
+from northstar.core.auth import CurrentUser, DbSession, permission, serialize_user, serialize_users
+from northstar.core.config import get_settings
+from northstar.core.http import ApiError, pagination_meta, success
 from northstar.core.serialization import (
     conversation_dict,
     iso,
     locale_from_header,
     order_dict,
+    orders_dict,
     post_dict,
     product_dict,
     slugify,
@@ -30,6 +33,8 @@ from northstar.schemas import (
 )
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+Page = Annotated[int, Query(ge=1)]
+PerPage = Annotated[int, Query(ge=10, le=100)]
 
 
 def _option(values: list[str]) -> list[dict[str, str]]:
@@ -106,34 +111,44 @@ def metadata(request: Request) -> Response:
 
 
 @router.get("/products", dependencies=[Depends(permission("products.view"))])
-def products(request: Request, db: DbSession) -> Response:
+def products(request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25) -> Response:
+    total = int(
+        db.execute(text("SELECT COUNT(*) FROM products WHERE deleted_at IS NULL")).scalar_one()
+    )
     rows = (
         db.execute(
             text(
-                "SELECT * FROM products WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 100"
-            )
+                "SELECT p.*,c.name category_name,c.slug category_slug,c.translations category_translations "
+                "FROM products p LEFT JOIN categories c ON c.id=p.category_id "
+                "WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset"
+            ),
+            {"limit": per_page, "offset": (page - 1) * per_page},
         )
         .mappings()
         .all()
     )
     locale = locale_from_header(request.headers.get("Accept-Language"))
-    return success(request, [product_dict(db, dict(row), locale) for row in rows])
+    return success(
+        request,
+        [product_dict(db, dict(row), locale) for row in rows],
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 def _save_product(db: DbSession, payload: ProductInput, product_id: int | None = None) -> int:
     values = payload.model_dump()
-    values["images"] = json.dumps(values["images"])
+    values["images"] = json.dumps([str(image) for image in payload.images])
     values["now"] = datetime.now(UTC)
     if product_id is None:
         values["slug"] = slugify(payload.name)
         result = db.execute(
             text(
                 "INSERT INTO products(category_id,name,slug,sku,excerpt,description,price,sale_price,stock,images,status,is_featured,published_at,created_at,updated_at) "
-                "VALUES (:category_id,:name,:slug,:sku,:excerpt,:description,:price,:sale_price,:stock,:images,:status,:is_featured,:published_at,:now,:now)"
+                "VALUES (:category_id,:name,:slug,:sku,:excerpt,:description,:price,:sale_price,:stock,:images,:status,:is_featured,:published_at,:now,:now) RETURNING id"
             ),
             values,
         )
-        return int(result.lastrowid)
+        return int(result.scalar_one())
     values["id"] = product_id
     result = db.execute(
         text(
@@ -202,7 +217,7 @@ def create_category(payload: CategoryInput, request: Request, db: DbSession) -> 
     now = datetime.now(UTC)
     result = db.execute(
         text(
-            "INSERT INTO categories(name,slug,description,is_active,created_at,updated_at) VALUES (:name,:slug,:description,1,:now,:now)"
+            "INSERT INTO categories(name,slug,description,is_active,created_at,updated_at) VALUES (:name,:slug,:description,TRUE,:now,:now) RETURNING id"
         ),
         {
             "name": payload.name,
@@ -211,9 +226,10 @@ def create_category(payload: CategoryInput, request: Request, db: DbSession) -> 
             "now": now,
         },
     )
+    category_id = int(result.scalar_one())
     db.commit()
     row = (
-        db.execute(text("SELECT * FROM categories WHERE id=:id"), {"id": result.lastrowid})
+        db.execute(text("SELECT * FROM categories WHERE id=:id"), {"id": category_id})
         .mappings()
         .one()
     )
@@ -243,11 +259,23 @@ def update_category(
 
 
 @router.get("/orders", dependencies=[Depends(permission("orders.view"))])
-def admin_orders(request: Request, db: DbSession) -> Response:
+def admin_orders(
+    request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25
+) -> Response:
+    total = int(db.execute(text("SELECT COUNT(*) FROM orders")).scalar_one())
     rows = (
-        db.execute(text("SELECT * FROM orders ORDER BY created_at DESC LIMIT 100")).mappings().all()
+        db.execute(
+            text("SELECT * FROM orders ORDER BY created_at DESC LIMIT :limit OFFSET :offset"),
+            {"limit": per_page, "offset": (page - 1) * per_page},
+        )
+        .mappings()
+        .all()
     )
-    return success(request, [order_dict(db, dict(row)) for row in rows])
+    return success(
+        request,
+        orders_dict(db, [dict(row) for row in rows]),
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 @router.patch("/orders/{order_id}", dependencies=[Depends(permission("orders.manage"))])
@@ -284,13 +312,14 @@ def create_promotion(payload: PromotionInput, request: Request, db: DbSession) -
     )
     result = db.execute(
         text(
-            "INSERT INTO promotions(name,code,type,value,minimum_order,starts_at,ends_at,is_active,created_at,updated_at) VALUES (:name,:code,:type,:value,:minimum_order,:starts_at,:ends_at,:is_active,:now,:now)"
+            "INSERT INTO promotions(name,code,type,value,minimum_order,starts_at,ends_at,is_active,created_at,updated_at) VALUES (:name,:code,:type,:value,:minimum_order,:starts_at,:ends_at,:is_active,:now,:now) RETURNING id"
         ),
         values,
     )
+    promotion_id = int(result.scalar_one())
     db.commit()
     row = (
-        db.execute(text("SELECT * FROM promotions WHERE id=:id"), {"id": result.lastrowid})
+        db.execute(text("SELECT * FROM promotions WHERE id=:id"), {"id": promotion_id})
         .mappings()
         .one()
     )
@@ -343,11 +372,21 @@ def delete_promotion(promotion_id: int, db: DbSession) -> Response:
 
 
 @router.get("/users", dependencies=[Depends(permission("users.view"))])
-def users(request: Request, db: DbSession) -> Response:
+def users(request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25) -> Response:
+    total = int(db.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
     ids = (
-        db.execute(text("SELECT id FROM users ORDER BY created_at DESC LIMIT 100")).scalars().all()
+        db.execute(
+            text("SELECT id FROM users ORDER BY created_at DESC LIMIT :limit OFFSET :offset"),
+            {"limit": per_page, "offset": (page - 1) * per_page},
+        )
+        .scalars()
+        .all()
     )
-    return success(request, [serialize_user(db, int(user_id)) for user_id in ids])
+    return success(
+        request,
+        serialize_users(db, [int(user_id) for user_id in ids]),
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 @router.get("/roles", dependencies=[Depends(permission("users.view"))])
@@ -382,6 +421,16 @@ def update_roles(
 ) -> Response:
     if int(actor["id"]) == user_id and "admin" not in payload.roles:
         raise ApiError("You cannot remove your own administrator role.", "CANNOT_DEMOTE_SELF", 409)
+    if get_settings().require_privileged_mfa and set(payload.roles) & {"admin", "manager"}:
+        mfa_enabled_at = db.execute(
+            text("SELECT mfa_enabled_at FROM users WHERE id=:user_id"), {"user_id": user_id}
+        ).scalar_one_or_none()
+        if mfa_enabled_at is None:
+            raise ApiError(
+                "The user must enable multi-factor authentication before receiving this role.",
+                "MFA_ENROLLMENT_REQUIRED",
+                409,
+            )
     available_roles = db.execute(text("SELECT id,name FROM roles")).mappings().all()
     requested_roles = set(payload.roles)
     role_rows = [role for role in available_roles if role["name"] in requested_roles]
@@ -398,13 +447,28 @@ def update_roles(
 
 
 @router.get("/conversations", dependencies=[Depends(permission("chat.view"))])
-def conversations(request: Request, db: DbSession) -> Response:
+def conversations(
+    request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25
+) -> Response:
+    total = int(db.execute(text("SELECT COUNT(*) FROM conversations")).scalar_one())
     rows = (
-        db.execute(text("SELECT * FROM conversations ORDER BY last_message_at DESC LIMIT 100"))
+        db.execute(
+            text(
+                "SELECT c.*,customer.name customer_name,assignee.name assigned_name "
+                "FROM conversations c LEFT JOIN users customer ON customer.id=c.customer_id "
+                "LEFT JOIN users assignee ON assignee.id=c.assigned_to "
+                "ORDER BY c.last_message_at DESC LIMIT :limit OFFSET :offset"
+            ),
+            {"limit": per_page, "offset": (page - 1) * per_page},
+        )
         .mappings()
         .all()
     )
-    return success(request, [conversation_dict(db, dict(row)) for row in rows])
+    return success(
+        request,
+        [conversation_dict(db, dict(row), include_messages=False) for row in rows],
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 @router.get("/conversations/{conversation_id}", dependencies=[Depends(permission("chat.view"))])
@@ -445,14 +509,27 @@ def reply_conversation(
 
 
 @router.get("/posts", dependencies=[Depends(permission("content.manage"))])
-def posts(request: Request, db: DbSession) -> Response:
+def posts(request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25) -> Response:
+    total = int(
+        db.execute(text("SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL")).scalar_one()
+    )
     rows = (
-        db.execute(text("SELECT * FROM posts WHERE deleted_at IS NULL ORDER BY created_at DESC"))
+        db.execute(
+            text(
+                "SELECT p.*,u.name author_name FROM posts p LEFT JOIN users u ON u.id=p.author_id "
+                "WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset"
+            ),
+            {"limit": per_page, "offset": (page - 1) * per_page},
+        )
         .mappings()
         .all()
     )
     locale = locale_from_header(request.headers.get("Accept-Language"))
-    return success(request, [post_dict(db, dict(row), locale) for row in rows])
+    return success(
+        request,
+        [post_dict(db, dict(row), locale) for row in rows],
+        meta=pagination_meta(page, per_page, total),
+    )
 
 
 @router.post("/posts", status_code=201, dependencies=[Depends(permission("content.manage"))])
@@ -469,16 +546,13 @@ def create_post(payload: PostInput, request: Request, db: DbSession, user: Curre
     )
     result = db.execute(
         text(
-            "INSERT INTO posts(author_id,title,slug,excerpt,content,cover_image,status,published_at,created_at,updated_at) VALUES (:author_id,:title,:slug,:excerpt,:content,:cover_image,:status,:published_at,:now,:now)"
+            "INSERT INTO posts(author_id,title,slug,excerpt,content,cover_image,status,published_at,created_at,updated_at) VALUES (:author_id,:title,:slug,:excerpt,:content,:cover_image,:status,:published_at,:now,:now) RETURNING id"
         ),
         values,
     )
+    post_id = int(result.scalar_one())
     db.commit()
-    row = (
-        db.execute(text("SELECT * FROM posts WHERE id=:id"), {"id": result.lastrowid})
-        .mappings()
-        .one()
-    )
+    row = db.execute(text("SELECT * FROM posts WHERE id=:id"), {"id": post_id}).mappings().one()
     return success(request, post_dict(db, dict(row), "en"), "Post created.", 201)
 
 
@@ -521,15 +595,23 @@ def delete_post(post_id: int, db: DbSession) -> Response:
 
 
 @router.get("/contacts", dependencies=[Depends(permission("contacts.view"))])
-def contacts(request: Request, db: DbSession) -> Response:
+def contacts(request: Request, db: DbSession, page: Page = 1, per_page: PerPage = 25) -> Response:
+    total = int(db.execute(text("SELECT COUNT(*) FROM contact_messages")).scalar_one())
     rows = (
-        db.execute(text("SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 200"))
+        db.execute(
+            text(
+                "SELECT * FROM contact_messages ORDER BY created_at DESC "
+                "LIMIT :limit OFFSET :offset"
+            ),
+            {"limit": per_page, "offset": (page - 1) * per_page},
+        )
         .mappings()
         .all()
     )
     return success(
         request,
         [{**dict(row), "id": int(row["id"]), "created_at": iso(row["created_at"])} for row in rows],
+        meta=pagination_meta(page, per_page, total),
     )
 
 
