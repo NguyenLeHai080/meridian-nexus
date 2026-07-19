@@ -1,3 +1,5 @@
+import re
+
 from fastapi.testclient import TestClient
 
 from northstar.main import app
@@ -51,6 +53,29 @@ def test_security_and_authentication_contract() -> None:
         logout = client.post("/api/v1/auth/logout", headers=headers)
         assert logout.status_code == 200
         assert client.get("/api/v1/auth/me").status_code == 401
+
+
+def test_local_swagger_docs_use_nonce_scoped_csp() -> None:
+    with TestClient(app) as client:
+        docs = client.get("/docs")
+        assert docs.status_code == 200
+
+        nonce_match = re.search(r'<script nonce="([^"]+)">', docs.text)
+        assert nonce_match is not None
+
+        policy = docs.headers["Content-Security-Policy"]
+        assert "default-src 'none'" in policy
+        assert f"'nonce-{nonce_match.group(1)}'" in policy
+        assert "script-src" in policy
+        assert "style-src https://cdn.jsdelivr.net" in policy
+        assert "img-src https://fastapi.tiangolo.com data:" in policy
+        assert "connect-src 'self'" in policy
+        assert "'unsafe-inline'" not in policy
+
+        health = client.get("/health")
+        assert health.headers["Content-Security-Policy"] == (
+            "default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+        )
 
 
 def test_validation_and_localization_contract() -> None:
