@@ -16,28 +16,61 @@ concurrency:
   group: enterprise-deploy-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
 
+env:
+  API_IMAGE: ghcr.io/nguyenlehai080/meridian-nexus-api
+  WEB_IMAGE: ghcr.io/nguyenlehai080/meridian-nexus-web
+
 jobs:
-  publish:
-    name: Approved artifact publication
+  release-source:
+    name: Resolve immutable release source
     if: >-
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    environment: ${{ github.event.workflow_run.head_branch }}
     outputs:
-      image_digest: ${{ steps.backend.outputs.digest }}
+      source_sha: ${{ steps.source.outputs.source_sha }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+      - id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ github.event.workflow_run.head_sha }}"
+          if [[ "${{ github.event.workflow_run.head_branch }}" == "prod" ]]; then
+            parent_count="$(git rev-list --parents -n 1 HEAD | wc -w)"
+            if [[ "$parent_count" -lt 3 ]]; then
+              echo "Production promotion must be a merge commit from staging"
+              exit 1
+            fi
+            source_sha="$(git rev-parse HEAD^2)"
+          fi
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish or promote immutable artifacts
+    needs: release-source
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.workflow_run.head_branch }}
+    outputs:
+      api_digest: ${{ steps.evidence.outputs.api_digest }}
+      web_digest: ${{ steps.evidence.outputs.web_digest }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: github.event.workflow_run.head_branch == 'staging'
+        with:
+          ref: ${{ needs.release-source.outputs.source_sha }}
       - uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
-      - name: Build and publish backend with SBOM and provenance
-        id: backend
+      - name: Build staging backend
+        id: api-build
+        if: github.event.workflow_run.head_branch == 'staging'
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: BE
@@ -46,84 +79,107 @@ jobs:
           sbom: true
           provenance: mode=max
           tags: |
-            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.event.workflow_run.head_branch }}
-            ghcr.io/nguyenlehai080/meridian-nexus-api:${{ github.event.workflow_run.head_sha }}
+            ${{ env.API_IMAGE }}:staging
+            ${{ env.API_IMAGE }}:${{ needs.release-source.outputs.source_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Attest backend image provenance
+      - name: Build environment-neutral staging frontend
+        id: web-build
+        if: github.event.workflow_run.head_branch == 'staging'
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: FE
+          push: true
+          sbom: true
+          provenance: mode=max
+          build-args: |
+            VITE_API_URL=/api/v1
+            VITE_BACKEND_URL=/
+            VITE_APP_NAME=${{ vars.VITE_APP_NAME || 'Meridian Nexus' }}
+          tags: |
+            ${{ env.WEB_IMAGE }}:staging
+            ${{ env.WEB_IMAGE }}:${{ needs.release-source.outputs.source_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Promote verified staging digests to production tags
+        if: github.event.workflow_run.head_branch == 'prod'
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ needs.release-source.outputs.source_sha }}"
+          docker buildx imagetools create --tag "${API_IMAGE}:prod" "${API_IMAGE}:${source_sha}"
+          docker buildx imagetools create --tag "${WEB_IMAGE}:prod" "${WEB_IMAGE}:${source_sha}"
+      - name: Resolve release evidence
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ needs.release-source.outputs.source_sha }}"
+          api_digest="$(docker buildx imagetools inspect "${API_IMAGE}:${source_sha}" --format '{{.Manifest.Digest}}')"
+          web_digest="$(docker buildx imagetools inspect "${WEB_IMAGE}:${source_sha}" --format '{{.Manifest.Digest}}')"
+          [[ "$api_digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          [[ "$web_digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          echo "api_digest=$api_digest" >> "$GITHUB_OUTPUT"
+          echo "web_digest=$web_digest" >> "$GITHUB_OUTPUT"
+      - name: Attest staging backend provenance
+        if: github.event.workflow_run.head_branch == 'staging'
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
-          subject-name: ghcr.io/nguyenlehai080/meridian-nexus-api
-          subject-digest: ${{ steps.backend.outputs.digest }}
+          subject-name: ${{ env.API_IMAGE }}
+          subject-digest: ${{ steps.evidence.outputs.api_digest }}
           push-to-registry: true
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: FE/package-lock.json
-      - name: Build frontend for approved environment
-        if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
-        working-directory: FE
-        env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
-          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}
-          VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
-        run: |
-          npm ci
-          npm run build
-          tar -czf "../meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz" -C dist .
-      - name: Attest frontend artifact provenance
-        if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
+      - name: Attest staging frontend provenance
+        if: github.event.workflow_run.head_branch == 'staging'
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
-          subject-path: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: vars.VITE_API_URL != '' && vars.VITE_BACKEND_URL != ''
-        with:
-          name: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}
-          path: meridian-nexus-web-${{ github.event.workflow_run.head_sha }}.tar.gz
-          if-no-files-found: error
-          retention-days: 30
-      - name: Report deferred frontend publication
-        if: vars.VITE_API_URL == '' || vars.VITE_BACKEND_URL == ''
-        run: |
-          echo "Frontend publication is deferred until environment URLs are configured." >> "$GITHUB_STEP_SUMMARY"
+          subject-name: ${{ env.WEB_IMAGE }}
+          subject-digest: ${{ steps.evidence.outputs.web_digest }}
+          push-to-registry: true
 
-  runtime-verification:
-    name: Runtime smoke gate
-    needs: publish
+  deploy-and-verify:
+    name: Deploy and verify approved release
+    needs: [release-source, publish]
     runs-on: ubuntu-latest
     environment: ${{ github.event.workflow_run.head_branch }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-      - name: Run read-only deployment smoke tests
-        if: vars.SMOKE_TARGET_URL != ''
-        run: python BE/scripts/deployment_smoke.py --target "${{ vars.SMOKE_TARGET_URL }}"
-      - name: Record artifact-only release
-        if: vars.SMOKE_TARGET_URL == ''
-        run: |
-          echo "No live target is configured; this pipeline publishes verified artifacts only." >> "$GITHUB_STEP_SUMMARY"
-      - name: Verify published digest exists
+      - name: Require deployment integration
         env:
-          IMAGE_DIGEST: ${{ needs.publish.outputs.image_digest }}
+          DEPLOYMENT_WEBHOOK_URL: ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
+          DEPLOYMENT_WEBHOOK_TOKEN: ${{ secrets.DEPLOYMENT_WEBHOOK_TOKEN }}
+          SMOKE_TARGET_URL: ${{ vars.SMOKE_TARGET_URL }}
+        shell: bash
         run: |
-          if [[ ! "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then
-            echo "Invalid published image digest"
-            exit 1
-          fi
-
-  deployment-record:
-    name: Auditable deployment record
-    needs: [publish, runtime-verification]
-    runs-on: ubuntu-latest
-    steps:
+          set -euo pipefail
+          [[ -n "$DEPLOYMENT_WEBHOOK_URL" ]] || { echo "DEPLOYMENT_WEBHOOK_URL is required"; exit 1; }
+          [[ -n "$DEPLOYMENT_WEBHOOK_TOKEN" ]] || { echo "DEPLOYMENT_WEBHOOK_TOKEN is required"; exit 1; }
+          [[ -n "$SMOKE_TARGET_URL" ]] || { echo "SMOKE_TARGET_URL is required"; exit 1; }
+      - name: Deploy immutable digests
+        env:
+          DEPLOYMENT_WEBHOOK_URL: ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
+          DEPLOYMENT_WEBHOOK_TOKEN: ${{ secrets.DEPLOYMENT_WEBHOOK_TOKEN }}
+          API_DIGEST: ${{ needs.publish.outputs.api_digest }}
+          WEB_DIGEST: ${{ needs.publish.outputs.web_digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error --retry 3 \
+            --request POST "$DEPLOYMENT_WEBHOOK_URL" \
+            --header "Authorization: Bearer $DEPLOYMENT_WEBHOOK_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "{\"environment\":\"${{ github.event.workflow_run.head_branch }}\",\"api_image\":\"${API_IMAGE}@${API_DIGEST}\",\"web_image\":\"${WEB_IMAGE}@${WEB_DIGEST}\"}"
+      - name: Run deployment smoke tests
+        run: python BE/scripts/deployment_smoke.py --target "${{ vars.SMOKE_TARGET_URL }}"
       - name: Record release evidence
         run: |
-          echo "## Enterprise release evidence" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Environment: ${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Commit: ${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Source CI: ${{ github.event.workflow_run.html_url }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image digest: ${{ needs.publish.outputs.image_digest }}" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Enterprise release evidence"
+            echo "- Environment: ${{ github.event.workflow_run.head_branch }}"
+            echo "- Release source: ${{ needs.release-source.outputs.source_sha }}"
+            echo "- Environment commit: ${{ github.event.workflow_run.head_sha }}"
+            echo "- API digest: ${{ needs.publish.outputs.api_digest }}"
+            echo "- Web digest: ${{ needs.publish.outputs.web_digest }}"
+            echo "- Source CI: ${{ github.event.workflow_run.html_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,5 +1,6 @@
 {
   "loading": "Loading data...",
+  "pagination": { "label": "Pagination", "previous": "Previous page", "next": "Next page" },
   "sidebar": {
     "office": "Commerce office",
     "storefront": "View storefront",

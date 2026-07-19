@@ -80,7 +80,7 @@ export interface ConversationMessage {
 
 export interface Conversation {
   id: number
-  token: string
+  token: string | null
   status: string
   customer: string
   assigned_to: string | null

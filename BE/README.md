@@ -45,4 +45,6 @@ python scripts/security_smoke.py --target http://127.0.0.1:8000
 
 Authentication uses opaque, high-entropy server-side sessions in an `HttpOnly` cookie. Passwords use Argon2id. Legacy bcrypt hashes are accepted once and upgraded automatically after a successful login. State-changing requests require both a trusted `Origin` and a matching double-submit CSRF token.
 
-For production, start from `.env.production.example`. Startup fails closed when HTTPS-only origins, `Secure` cookies, HSTS, trusted hosts, or the `__Host-` cookie prefix are missing. Replace the single-process limiter with Redis-backed distributed limiting before horizontal scaling.
+Production authentication requires verified email, SMTP delivery, TOTP multi-factor authentication for privileged roles, one-time recovery codes, expiring password-reset tokens, and auditable session revocation. MFA secrets are encrypted with a key derived from `APP_KEY`; rotating that key requires a planned MFA re-enrollment procedure.
+
+For production, start from `.env.production.example`. Startup fails closed unless PostgreSQL, Redis, HTTPS-only origins, `Secure` cookies, HSTS, trusted hosts, and the `__Host-` cookie prefix are configured. Redis-backed sliding-window limits are mandatory in production and PostgreSQL migrations are serialized with an advisory transaction lock.

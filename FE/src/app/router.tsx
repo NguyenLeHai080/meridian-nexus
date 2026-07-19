@@ -90,6 +90,32 @@ export const router = createBrowserRouter([
               Component: (await import('@/modules/auth/pages/RegisterPage')).RegisterPage,
             }),
           },
+          {
+            path: '/verify-email-sent',
+            lazy: async () => ({
+              Component: (await import('@/modules/auth/pages/VerifyEmailSentPage'))
+                .VerifyEmailSentPage,
+            }),
+          },
+          {
+            path: '/verify-email',
+            lazy: async () => ({
+              Component: (await import('@/modules/auth/pages/VerifyEmailPage')).VerifyEmailPage,
+            }),
+          },
+          {
+            path: '/forgot-password',
+            lazy: async () => ({
+              Component: (await import('@/modules/auth/pages/ForgotPasswordPage'))
+                .ForgotPasswordPage,
+            }),
+          },
+          {
+            path: '/reset-password',
+            lazy: async () => ({
+              Component: (await import('@/modules/auth/pages/ResetPasswordPage')).ResetPasswordPage,
+            }),
+          },
         ],
       },
     ],

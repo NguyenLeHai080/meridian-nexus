@@ -67,14 +67,14 @@ def home(request: Request, db: DbSession) -> Response:
         db.execute(
             text(
                 "SELECT * FROM products WHERE status='published' AND deleted_at IS NULL "
-                "AND is_featured=1 ORDER BY published_at DESC LIMIT 6"
+                "AND is_featured=TRUE ORDER BY published_at DESC LIMIT 6"
             )
         )
         .mappings()
         .all()
     )
     categories = (
-        db.execute(text("SELECT * FROM categories WHERE is_active=1 ORDER BY name"))
+        db.execute(text("SELECT * FROM categories WHERE is_active=TRUE ORDER BY name"))
         .mappings()
         .all()
     )
@@ -82,7 +82,7 @@ def home(request: Request, db: DbSession) -> Response:
     promotions = (
         db.execute(
             text(
-                "SELECT * FROM promotions WHERE is_active=1 "
+                "SELECT * FROM promotions WHERE is_active=TRUE "
                 "AND (starts_at IS NULL OR starts_at<=:now) AND (ends_at IS NULL OR ends_at>=:now) "
                 "ORDER BY ends_at LIMIT 3"
             ),
@@ -211,9 +211,11 @@ def contact(payload: ContactInput, request: Request, db: DbSession) -> Response:
     result = db.execute(
         text(
             "INSERT INTO contact_messages(name,email,phone,subject,message,status,created_at,updated_at) "
-            "VALUES (:name,:email,:phone,:subject,:message,'new',:now,:now)"
+            "VALUES (:name,:email,:phone,:subject,:message,'new',:now,:now) RETURNING id"
         ),
         {**payload.model_dump(), "now": datetime.now(UTC)},
     )
     db.commit()
-    return success(request, {"id": int(result.lastrowid)}, "Your message has been received.", 201)
+    return success(
+        request, {"id": int(result.scalar_one())}, "Your message has been received.", 201
+    )

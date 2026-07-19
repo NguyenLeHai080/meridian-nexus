@@ -114,3 +114,23 @@ def test_insecure_production_configuration_fails_closed() -> None:
     except ValidationError:
         return
     raise AssertionError("Insecure production settings must not be accepted.")
+
+
+def test_secure_production_configuration_is_accepted() -> None:
+    settings = Settings(
+        app_env="production",
+        app_key="a-secure-key-with-more-than-thirty-two-characters",
+        database_url="postgresql+psycopg://app:secret@postgres/app",
+        redis_url="rediss://default:secret@redis.example.com/0",
+        frontend_origins=["https://shop.example.com"],
+        frontend_url="https://shop.example.com",
+        trusted_hosts=["api.example.com"],
+        session_cookie="__Host-northstar_session",
+        cookie_secure=True,
+        enable_hsts=True,
+        require_email_verification=True,
+        require_privileged_mfa=True,
+        smtp_host="smtp.example.com",
+        smtp_from_email="no-reply@example.com",
+    )
+    assert settings.app_env == "production"

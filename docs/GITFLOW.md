@@ -10,7 +10,7 @@
 
 Direct pushes to `prod` and `staging` are blocked. Changes require pull requests, successful checks, and review.
 
-Every protected branch requires the enterprise release gate. A push to `staging` or `prod` publishes artifacts only after the complete CI workflow succeeds; CD cannot race ahead of CI.
+Every protected branch requires the enterprise release gate. Staging builds and attests the backend and environment-neutral frontend images. Production resolves the staging merge parent and promotes those exact image digests without rebuilding. Both environments require an approved deployment webhook and a successful runtime smoke test.
 
 ## Feature flow
 

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AdminHeader } from '../components/AdminHeader'
+import { AdminPagination } from '../components/AdminPagination'
 import {
   useAdminConversation,
   useAdminConversations,
@@ -13,7 +14,8 @@ export function AdminChatPage() {
   const { t } = useTranslation('admin')
   const label = useAdminLabel()
   const [selected, setSelected] = useState<number | null>(null)
-  const conversations = useAdminConversations()
+  const [page, setPage] = useState(1)
+  const conversations = useAdminConversations(page)
   const conversation = useAdminConversation(selected)
   const reply = useReplyToConversation(selected)
   let threadContent: ReactNode = (
@@ -57,7 +59,7 @@ export function AdminChatPage() {
       <AdminHeader eyebrow={t('chat.eyebrow')} title={t('chat.title')} />
       <section className="admin-chat">
         <aside>
-          {conversations.data?.map((item) => {
+          {conversations.data?.items.map((item) => {
             let buttonClassName = ''
             if (selected === item.id) {
               buttonClassName = 'active'
@@ -79,6 +81,7 @@ export function AdminChatPage() {
               </button>
             )
           })}
+          <AdminPagination pagination={conversations.data?.pagination} onPageChange={setPage} />
         </aside>
         <div className="admin-chat-thread">{threadContent}</div>
       </section>

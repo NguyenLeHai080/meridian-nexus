@@ -1,5 +1,6 @@
 {
   "loading": "データを読み込み中...",
+  "pagination": { "label": "ページ移動", "previous": "前のページ", "next": "次のページ" },
   "sidebar": {
     "office": "コマース管理",
     "storefront": "ストアを見る",
