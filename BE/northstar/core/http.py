@@ -183,7 +183,18 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
         response.headers["Cross-Origin-Resource-Policy"] = "same-site"
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
-        response.headers["Content-Security-Policy"] = settings.content_security_policy
+        csp_nonce = getattr(request.state, "csp_nonce", None)
+        if csp_nonce is None:
+            content_security_policy = settings.content_security_policy
+        else:
+            content_security_policy = (
+                "default-src 'none'; base-uri 'none'; frame-ancestors 'none'; "
+                "form-action 'none'; connect-src 'self'; "
+                f"script-src 'nonce-{csp_nonce}' https://cdn.jsdelivr.net; "
+                "style-src https://cdn.jsdelivr.net; "
+                "img-src https://fastapi.tiangolo.com data:"
+            )
+        response.headers["Content-Security-Policy"] = content_security_policy
         if settings.enable_hsts:
             response.headers["Strict-Transport-Security"] = (
                 f"max-age={settings.hsts_max_age}; includeSubDomains; preload"

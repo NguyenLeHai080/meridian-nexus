@@ -1,7 +1,10 @@
+import secrets
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from northstar.core.bootstrap import bootstrap_reference_data
@@ -32,7 +35,7 @@ settings = get_settings()
 app = FastAPI(
     title=settings.app_name,
     debug=settings.app_debug,
-    docs_url="/docs" if settings.app_env == "local" else None,
+    docs_url=None,
     redoc_url=None,
     lifespan=lifespan,
 )
@@ -60,6 +63,20 @@ app.include_router(admin_router)
 app.include_router(storefront_router)
 app.include_router(chat_router)
 app.include_router(customer_router)
+
+
+if settings.app_env == "local":
+
+    @app.get("/docs", include_in_schema=False)
+    def swagger_docs(request: Request) -> HTMLResponse:
+        nonce = secrets.token_urlsafe(24)
+        request.state.csp_nonce = nonce
+        response = get_swagger_ui_html(
+            openapi_url=app.openapi_url,
+            title=f"{app.title} - Swagger UI",
+        )
+        html = response.body.decode("utf-8").replace("<script>", f'<script nonce="{nonce}">', 1)
+        return HTMLResponse(html)
 
 
 @app.get("/health")
