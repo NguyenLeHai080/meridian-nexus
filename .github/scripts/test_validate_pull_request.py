@@ -1,3 +1,5 @@
+from contextlib import redirect_stdout
+from io import StringIO
 import unittest
 
 from validate_pull_request import validate_dependabot_pull_request
@@ -25,7 +27,7 @@ class DependabotGovernanceTests(unittest.TestCase):
         self.assertFalse(accepted)
 
     def test_rejects_protected_environment_target(self) -> None:
-        with self.assertRaises(SystemExit):
+        with redirect_stdout(StringIO()), self.assertRaises(SystemExit):
             validate_dependabot_pull_request(
                 "dependabot[bot]",
                 "chore(deps): bump a dependency",
@@ -34,7 +36,7 @@ class DependabotGovernanceTests(unittest.TestCase):
             )
 
     def test_rejects_non_dependency_title(self) -> None:
-        with self.assertRaises(SystemExit):
+        with redirect_stdout(StringIO()), self.assertRaises(SystemExit):
             validate_dependabot_pull_request(
                 "dependabot[bot]",
                 "feat: change application behavior",
