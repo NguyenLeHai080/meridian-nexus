@@ -21,6 +21,11 @@ BE/**/*.py[cod]
 BE/*.sqlite
 BE/*.sqlite-shm
 BE/*.sqlite-wal
+BE/data/*.sqlite
+BE/data/*.sqlite-shm
+BE/data/*.sqlite-wal
+FE/playwright-report/
+FE/test-results/
 
 # Editors and operating systems
 .idea/
@@ -32,3 +37,5 @@ Thumbs.db
 *.log
 tmp/
 temp/
+# Local visual-audit and static-mirror artifacts
+FE/*.png

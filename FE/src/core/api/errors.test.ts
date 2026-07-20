@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ApiError, normalizeApiError } from './errors'
+import { ApiError, getApiErrorMessage, normalizeApiError } from './errors'
 
 describe('normalizeApiError', () => {
   it('normalizes the backend error contract', () => {
@@ -31,5 +31,28 @@ describe('normalizeApiError', () => {
     expect(error.status).toBeNull()
     expect(error.code).toBe('NETWORK_ERROR')
     expect(error.message).toBe('The request could not be completed.')
+  })
+
+  it('preserves normalized errors', () => {
+    const original = new ApiError('Already normalized', 409, 'CONFLICT')
+
+    expect(normalizeApiError(original)).toBe(original)
+  })
+
+  it('normalizes timeouts and HTTP responses without an API payload', () => {
+    const timeout = normalizeApiError({ isAxiosError: true, code: 'ECONNABORTED' })
+    const responseError = normalizeApiError({
+      isAxiosError: true,
+      response: { status: 503, headers: {}, data: null },
+    })
+
+    expect(timeout.message).toBe('The request timed out.')
+    expect(responseError.code).toBe('HTTP_ERROR')
+    expect(responseError.status).toBe(503)
+  })
+
+  it('normalizes client errors and exposes their safe message', () => {
+    expect(getApiErrorMessage(new Error('Invalid client state'))).toBe('Invalid client state')
+    expect(normalizeApiError('unexpected').message).toBe('An unexpected error occurred.')
   })
 })

@@ -1,68 +1,66 @@
-import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { StorefrontSite } from '@/modules/commerce/types/commerce.types'
 
-interface StoreFooterProps {
-  site: StorefrontSite
+function FooterColumn({
+  title,
+  children,
+  className = '',
+}: {
+  title: string
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <section className={className}>
+      <h3>{title}</h3>
+      {children}
+    </section>
+  )
 }
 
-function createExploreLinks(site: StorefrontSite): ReactNode[] {
-  const links: ReactNode[] = []
-
-  for (const item of site.navigation) {
-    if (item.path === '/') {
-      continue
-    }
-
-    if (item.path === '/contact') {
-      continue
-    }
-
-    links.push(
-      <Link key={item.path} to={item.path}>
-        {item.label}
-      </Link>,
-    )
-  }
-
-  return links
-}
-
-export function StoreFooter({ site }: StoreFooterProps) {
-  const { t } = useTranslation()
-  const exploreLinks = createExploreLinks(site)
+export function StoreFooter({ site }: { site: StorefrontSite }) {
+  const { t } = useTranslation('storefront')
+  const footerPosts = [
+    ['TNV_6179.jpg', t('homePage.footer.post1')],
+    ['nail_recep.jpg', t('homePage.footer.post2')],
+    ['Yoga.jpg', t('homePage.footer.post3')],
+  ] as const
 
   return (
-    <footer className="store-footer">
-      <div>
-        <Link className="store-logo store-logo--light" to="/">
-          <span>{site.brand.mark}</span>
-          {site.brand.name}
+    <footer className="store-footer nail-footer">
+      <FooterColumn title={t('homePage.footer.aboutTitle')}>
+        <p>{t('homePage.footer.aboutText')}</p>
+      </FooterColumn>
+      <FooterColumn title={t('homePage.footer.contactTitle')}>
+        <address className="nail-footer__address">
+          <span>
+            {t('homePage.footer.consultation')}:{' '}
+            <Link to="/contact">{t('homePage.footer.requestConsultation')}</Link>
+          </span>
+          <span>
+            {t('homePage.footer.email')}:{' '}
+            <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+          </span>
+          <span>{t('homePage.footer.location')}</span>
+        </address>
+        <Link className="nail-footer__direction" to="/contact">
+          {t('homePage.footer.directions')}
         </Link>
-        <p>{site.footer.tagline}</p>
-      </div>
-      <div>
-        <small>{t('explore')}</small>
-        {exploreLinks}
-      </div>
-      <div>
-        <small>{t('help')}</small>
-        <Link to="/contact">{t('contact')}</Link>
-        <Link to="/profile">{t('orderHistory')}</Link>
-        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-      </div>
-      <div className="footer-note">
-        <small>{site.footer.newsletter_title}</small>
-        <p>{site.footer.newsletter_text}</p>
-        <form>
-          <input type="email" placeholder={t('emailAddress')} />
-          <button>{t('join')}</button>
-        </form>
-      </div>
-      <div className="footer-bottom">
-        <span>{site.footer.legal}</span>
-        <span>{site.footer.note}</span>
+      </FooterColumn>
+      <FooterColumn title={t('homePage.footer.news')} className="nail-footer__posts">
+        {footerPosts.map(([image, title]) => (
+          <Link key={title} to="/journal">
+            <img src={`/nail-assets/${image}`} alt="" />
+            <span>{title}</span>
+          </Link>
+        ))}
+      </FooterColumn>
+      <div className="nail-footer__bottom">
+        <span>Copyright 2026 ©</span>
+        <span>{site.brand.name}</span>
+        <span>f · i · x · p · in</span>
       </div>
     </footer>
   )

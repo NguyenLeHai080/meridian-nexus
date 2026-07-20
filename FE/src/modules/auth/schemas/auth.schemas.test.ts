@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { loginSchema, registerSchema } from './auth.schemas'
+import {
+  createLoginSchema,
+  createRegisterSchema,
+  loginSchema,
+  registerSchema,
+} from './auth.schemas'
 
 describe('auth schemas', () => {
   it('accepts valid login credentials', () => {
@@ -17,5 +22,25 @@ describe('auth schemas', () => {
     })
 
     expect(result.success).toBe(false)
+  })
+
+  it('accepts a valid registration and uses translated validation messages', () => {
+    const translate = (key: string) => `translated:${key}`
+    const translatedLogin = createLoginSchema(translate)
+    const translatedRegister = createRegisterSchema(translate)
+
+    expect(
+      translatedRegister.safeParse({
+        name: 'Ada Lovelace',
+        email: 'ada@example.com',
+        password: 'SecurePassword123!',
+        password_confirmation: 'SecurePassword123!',
+      }).success,
+    ).toBe(true)
+
+    const invalidLogin = translatedLogin.safeParse({ email: 'invalid', password: '' })
+    expect(invalidLogin.error?.issues.map((issue) => issue.message)).toContain(
+      'translated:validation.email',
+    )
   })
 })

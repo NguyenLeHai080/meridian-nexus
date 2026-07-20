@@ -1,4 +1,141 @@
 {
+  "homePage": {
+    "navigation": {
+      "home": "Home",
+      "about": "About",
+      "visit": "Services",
+      "shop": "Digital Products",
+      "sip": "Projects",
+      "contact": "Contact"
+    },
+    "actions": {
+      "search": "Search",
+      "bookNow": "Start a Project",
+      "bookAppointments": "Get Free Consultation",
+      "ourService": "Explore Services",
+      "makeCall": "Discuss a Project",
+      "readMore": "Read More",
+      "shopNow": "Learn More"
+    },
+    "hero": {
+      "brand": "Digital Studio · Web · Automation · AI",
+      "slides": {
+        "healing": "Turn Ideas Into Powerful Digital Products",
+        "care": "Web, Automation and AI for Modern Business"
+      }
+    },
+    "images": {
+      "hero": "Digital studio creative workspace",
+      "salon": "Website design workspace",
+      "reception": "Digital product planning",
+      "treatment": "Technology project collaboration",
+      "event": "Team building a digital product"
+    },
+    "about": {
+      "kickerBefore": "Practical technology ·",
+      "kickerStrong": "Measurable results",
+      "kickerAfter": "for every project",
+      "title": "Your Digital Technology Partner",
+      "paragraph1": "Meridian Nexus is a digital studio specializing in professional websites, custom WordPress development, automation tools and practical AI solutions for individuals and businesses.",
+      "paragraph2": "We combine thoughtful design, reliable engineering and clear delivery processes to create products that are easy to use, secure, scalable and ready to support long-term growth."
+    },
+    "services": {
+      "eyebrow": "Digital Capabilities",
+      "title": "Services Built for Growth",
+      "intro": "From strategy and interface design to development, automation and AI, we deliver complete solutions aligned with real business goals.",
+      "items": {
+        "manicures": {
+          "title": "WEBSITE DESIGN",
+          "text": "Modern, responsive websites designed around your brand, users and conversion goals."
+        },
+        "pedicures": {
+          "title": "WORDPRESS DEVELOPMENT",
+          "text": "Business websites, landing pages and custom WordPress systems that remain easy to manage."
+        },
+        "manicurePedicure": {
+          "title": "CUSTOM TOOLS",
+          "text": "Purpose-built tools for data processing, content operations, API integrations and internal workflows."
+        },
+        "shellac": {
+          "title": "AUTOMATION",
+          "text": "Automate repetitive tasks, connect platforms and reduce manual operational work."
+        },
+        "artificialNails": {
+          "title": "AI SOLUTIONS",
+          "text": "Integrate ChatGPT, Gemini and intelligent assistants into customer and internal workflows."
+        },
+        "dippingPowders": {
+          "title": "AI CREATIVE STUDIO",
+          "text": "Create and refine images, videos, campaigns and Google Flow content with AI."
+        }
+      }
+    },
+    "quality": {
+      "kicker": "Reliable tools · transparent support",
+      "title": "Trusted Digital Products and Solutions",
+      "text": "We provide clearly sourced software services, practical digital tools and tailored solutions with onboarding and ongoing support.",
+      "foundation": "Digital Services",
+      "naturalTone": "Software & Productivity",
+      "cosmetic": "Custom Development",
+      "floralCream": "Tools & Automation"
+    },
+    "story": {
+      "kickerBefore": "A strong idea needs",
+      "kickerStrong": "The right technology partner",
+      "kickerAfter": "to move forward",
+      "title": "Build Products",
+      "accent": "That Create Real Value",
+      "text": "We work from discovery and experience design through development, launch and maintenance. Every website, tool and AI solution follows a clear process with practical outcomes.",
+      "capacity": "Projects Delivered",
+      "squareFoot": "Hour Support"
+    },
+    "pricing": {
+      "kickerBefore": "Flexible",
+      "kickerStrong": "Service Packages",
+      "kickerAfter": "for every stage",
+      "title": "Choose the Right",
+      "accent": "Digital Solution",
+      "description": "A focused solution tailored to your goals, timeline and operating model.",
+      "packages": {
+        "website": "STARTUP WEBSITE",
+        "wordpress": "BUSINESS WORDPRESS",
+        "automation": "TOOLS & AUTOMATION",
+        "aiCreative": "AI CREATIVE"
+      },
+      "labels": {
+        "website": "Get a Quote",
+        "wordpress": "Custom Scope",
+        "automation": "Project Review",
+        "aiCreative": "Explore Options"
+      }
+    },
+    "journal": {
+      "title": "Technology Insights",
+      "accent": "Guides & Ideas",
+      "intro": "Practical knowledge about WordPress, web design, automation, ChatGPT, Gemini and AI creative workflows."
+    },
+    "booking": {
+      "intro": "Have an idea? Let us turn it into a working digital product.",
+      "title": "Start Your Project With Us",
+      "appointment": "Send a Request",
+      "call": "Talk Now"
+    },
+    "footer": {
+      "aboutTitle": "About Us",
+      "aboutText": "A digital studio for websites, custom WordPress, automation tools and practical AI solutions for modern teams and businesses.",
+      "contactTitle": "Contact Us",
+      "phone": "Phone",
+      "consultation": "Consultation",
+      "requestConsultation": "Book a project call",
+      "email": "Email",
+      "directions": "Discuss a Project",
+      "location": "Remote-first · Serving clients worldwide",
+      "news": "Technology Insights",
+      "post1": "WordPress or React: Which One Fits Your Business?",
+      "post2": "Five Workflows You Can Automate Today",
+      "post3": "Using ChatGPT and Gemini for Better Content"
+    }
+  },
   "pagination": { "label": "Pagination", "previous": "Previous page", "next": "Next page" },
   "home": {
     "featuredEyebrow": "Curated essentials",

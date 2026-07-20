@@ -1,4 +1,141 @@
 {
+  "homePage": {
+    "navigation": {
+      "home": "Trang chủ",
+      "about": "Giới thiệu",
+      "visit": "Dịch vụ",
+      "shop": "Sản phẩm số",
+      "sip": "Dự án",
+      "contact": "Liên hệ"
+    },
+    "actions": {
+      "search": "Tìm kiếm",
+      "bookNow": "Bắt đầu dự án",
+      "bookAppointments": "Nhận tư vấn miễn phí",
+      "ourService": "Khám phá dịch vụ",
+      "makeCall": "Trao đổi dự án",
+      "readMore": "Xem thêm",
+      "shopNow": "Tìm hiểu thêm"
+    },
+    "hero": {
+      "brand": "Digital Studio · Web · Automation · AI",
+      "slides": {
+        "healing": "Biến ý tưởng thành sản phẩm số hiệu quả",
+        "care": "Website, Automation và AI cho doanh nghiệp hiện đại"
+      }
+    },
+    "images": {
+      "hero": "Không gian spa và nail",
+      "salon": "Salon Sixth Sense",
+      "reception": "Khu vực lễ tân",
+      "treatment": "Phòng trị liệu spa",
+      "event": "Sự kiện riêng tại spa"
+    },
+    "about": {
+      "kickerBefore": "Công nghệ phù hợp ·",
+      "kickerStrong": "Kết quả thực tế",
+      "kickerAfter": "cho từng dự án",
+      "title": "Đối tác công nghệ cho ý tưởng của bạn",
+      "paragraph1": "Meridian Nexus là digital studio chuyên thiết kế website, phát triển WordPress, xây dựng công cụ tự động hóa và triển khai giải pháp AI theo nhu cầu thực tế của cá nhân và doanh nghiệp.",
+      "paragraph2": "Chúng tôi kết hợp thiết kế chỉn chu, kỹ thuật đáng tin cậy và quy trình minh bạch để tạo ra sản phẩm dễ sử dụng, an toàn, dễ mở rộng và hỗ trợ tăng trưởng lâu dài."
+    },
+    "services": {
+      "eyebrow": "Năng lực công nghệ",
+      "title": "Dịch vụ hướng đến tăng trưởng",
+      "intro": "Từ chiến lược, thiết kế giao diện đến lập trình, tự động hóa và AI, chúng tôi cung cấp giải pháp toàn diện theo mục tiêu kinh doanh thực tế.",
+      "items": {
+        "manicures": {
+          "title": "THIẾT KẾ WEBSITE",
+          "text": "Website hiện đại, responsive và được thiết kế theo thương hiệu, người dùng cùng mục tiêu chuyển đổi."
+        },
+        "pedicures": {
+          "title": "PHÁT TRIỂN WORDPRESS",
+          "text": "Website doanh nghiệp, landing page và hệ thống WordPress tùy chỉnh, dễ dàng quản trị nội dung."
+        },
+        "manicurePedicure": {
+          "title": "VIẾT TOOL THEO YÊU CẦU",
+          "text": "Công cụ xử lý dữ liệu, quản lý nội dung, tích hợp API và tối ưu quy trình nội bộ."
+        },
+        "shellac": {
+          "title": "AUTOMATION",
+          "text": "Tự động hóa công việc lặp lại, kết nối nền tảng và giảm thao tác vận hành thủ công."
+        },
+        "artificialNails": {
+          "title": "GIẢI PHÁP AI",
+          "text": "Tích hợp ChatGPT, Gemini và trợ lý thông minh vào quy trình chăm sóc khách hàng hoặc nội bộ."
+        },
+        "dippingPowders": {
+          "title": "AI CREATIVE STUDIO",
+          "text": "Tạo và chỉnh sửa hình ảnh, video, chiến dịch nội dung và video Google Flow bằng AI."
+        }
+      }
+    },
+    "quality": {
+      "kicker": "Công cụ đáng tin cậy · hỗ trợ minh bạch",
+      "title": "Sản phẩm và giải pháp số chuyên nghiệp",
+      "text": "Chúng tôi cung cấp dịch vụ phần mềm có nguồn gốc rõ ràng, công cụ số thực tế và giải pháp tùy chỉnh kèm hướng dẫn cùng hỗ trợ sử dụng.",
+      "foundation": "Dịch vụ số",
+      "naturalTone": "Phần mềm & năng suất",
+      "cosmetic": "Phát triển tùy chỉnh",
+      "floralCream": "Tool & Automation"
+    },
+    "story": {
+      "kickerBefore": "Một ý tưởng tốt cần",
+      "kickerStrong": "Đối tác công nghệ phù hợp",
+      "kickerAfter": "để tiến xa hơn",
+      "title": "Cùng xây dựng sản phẩm",
+      "accent": "Tạo ra giá trị thực",
+      "text": "Chúng tôi đồng hành từ phân tích yêu cầu, thiết kế trải nghiệm đến phát triển, triển khai và bảo trì. Mỗi website, tool và giải pháp AI đều có quy trình rõ ràng cùng kết quả thực tế.",
+      "capacity": "Dự án triển khai",
+      "squareFoot": "Giờ hỗ trợ"
+    },
+    "pricing": {
+      "kickerBefore": "Các",
+      "kickerStrong": "Gói dịch vụ linh hoạt",
+      "kickerAfter": "cho từng giai đoạn",
+      "title": "Lựa chọn đúng",
+      "accent": "Giải pháp số",
+      "description": "Giải pháp tập trung, được thiết kế theo mục tiêu, thời gian và mô hình vận hành của bạn.",
+      "packages": {
+        "website": "WEBSITE KHỞI NGHIỆP",
+        "wordpress": "WORDPRESS DOANH NGHIỆP",
+        "automation": "TOOL & AUTOMATION",
+        "aiCreative": "AI CREATIVE"
+      },
+      "labels": {
+        "website": "Nhận báo giá",
+        "wordpress": "Theo yêu cầu",
+        "automation": "Khảo sát dự án",
+        "aiCreative": "Xem giải pháp"
+      }
+    },
+    "journal": {
+      "title": "Góc công nghệ",
+      "accent": "Kiến thức & ý tưởng",
+      "intro": "Kiến thức thực tế về WordPress, thiết kế web, automation, ChatGPT, Gemini và quy trình sáng tạo bằng AI."
+    },
+    "booking": {
+      "intro": "Bạn đã có ý tưởng? Hãy cùng biến nó thành sản phẩm số hoạt động hiệu quả.",
+      "title": "Bắt đầu dự án cùng chúng tôi",
+      "appointment": "Gửi yêu cầu",
+      "call": "Trao đổi ngay"
+    },
+    "footer": {
+      "aboutTitle": "Về chúng tôi",
+      "aboutText": "Digital Studio chuyên thiết kế website, phát triển WordPress, xây dựng công cụ tự động hóa và ứng dụng AI cho cá nhân, thương hiệu và doanh nghiệp.",
+      "contactTitle": "Liên hệ",
+      "phone": "Điện thoại",
+      "consultation": "Tư vấn",
+      "requestConsultation": "Đặt lịch trao đổi dự án",
+      "email": "Email",
+      "directions": "Trao đổi dự án",
+      "location": "Làm việc từ xa · Phục vụ khách hàng toàn cầu",
+      "news": "Góc công nghệ",
+      "post1": "WordPress hay React phù hợp hơn với doanh nghiệp?",
+      "post2": "5 quy trình bạn có thể tự động hóa ngay hôm nay",
+      "post3": "Ứng dụng ChatGPT và Gemini để tạo nội dung tốt hơn"
+    }
+  },
   "pagination": { "label": "Phân trang", "previous": "Trang trước", "next": "Trang sau" },
   "home": {
     "featuredEyebrow": "Sản phẩm chọn lọc",

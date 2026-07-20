@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500&display=swap');
+
+:root {
+  font-family: 'Manrope', sans-serif;
+  color: #18231d;
+  background: #eceee6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #18231d;
+  --paper: #f7f5ed;
+  --mist: #eceee6;
+  --acid: #d9ff43;
+  --line: rgba(24, 35, 29, 0.16);
+  --muted: #6d756f;
+}
+
+html[lang='vi'] body,
+html[lang='vi'] body * {
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+html[lang='ja'] body,
+html[lang='ja'] body * {
+  font-family: 'Noto Sans JP', 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+
+html[lang='ko'] body,
+html[lang='ko'] body * {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+html[lang='vi'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span),
+html[lang='vi'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span) * {
+  font-family: 'Noto Serif', serif;
+}
+
+html[lang='ja'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span),
+html[lang='ja'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span) * {
+  font-family: 'Noto Serif JP', serif;
+}
+
+html[lang='ko'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span),
+html[lang='ko'] body :is(h1, h2, h3, em, .store-logo, .brand__mark, .admin-brand > span) * {
+  font-family: 'Noto Serif KR', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+button,
+input {
+  font: inherit;
+}
+a {
+  color: inherit;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--ink);
+  background: var(--acid);
+  border-radius: 50%;
+  font-family: 'Newsreader', serif;
+  font-size: 21px;
+}
+.eyebrow {
+  margin-bottom: 18px;
+  font-family: 'DM Mono', monospace;
+  color: #637068;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.12fr) minmax(420px, 0.88fr);
+  min-height: 100vh;
+  background: var(--paper);
+}
+.auth-story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 46px 54px 52px;
+  color: #f7f5ed;
+  background: #18231d;
+  overflow: hidden;
+}
+.auth-story::before {
+  position: absolute;
+  content: '';
+  width: 510px;
+  height: 510px;
+  right: -145px;
+  top: -150px;
+  border: 1px solid rgba(217, 255, 67, 0.45);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 72px rgba(217, 255, 67, 0.03),
+    0 0 0 145px rgba(217, 255, 67, 0.025);
+}
+.auth-story__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  padding: 80px 0;
+}
+.auth-story__copy > span {
+  font-family: 'DM Mono', monospace;
+  color: var(--acid);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.auth-story__copy h2 {
+  margin: 28px 0;
+  font-family: 'Newsreader', serif;
+  font-weight: 500;
+  font-size: clamp(58px, 6.5vw, 104px);
+  line-height: 0.87;
+  letter-spacing: -0.055em;
+}
+.auth-story__copy p {
+  max-width: 470px;
+  color: #aeb7b0;
+  line-height: 1.7;
+}
+.auth-story__grid {
+  position: absolute;
+  inset: auto 0 0;
+  height: 28%;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(transparent, black);
+}
+.auth-panel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 48px;
+}
+.auth-language {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+}
+.auth-language .language-switcher {
+  padding-right: 0;
+  border-right: 0;
+}
+.auth-card {
+  width: min(100%, 430px);
+  animation: reveal 0.55s ease both;
+}
+.auth-card h1 {
+  margin: 0;
+  font-family: 'Newsreader', serif;
+  font-size: clamp(44px, 5vw, 64px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+.auth-card__lead {
+  margin: 18px 0 34px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.auth-form {
+  display: grid;
+  gap: 20px;
+}
+.field {
+  display: grid;
+  gap: 8px;
+}
+.field__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.field__input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  outline: none;
+  padding: 14px 15px;
+  color: var(--ink);
+  background: transparent;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.field__input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(24, 35, 29, 0.07);
+}
+.field__input[aria-invalid='true'] {
+  border-color: #a53b2c;
+}
+.field__error {
+  color: #a53b2c;
+  font-size: 11px;
+}
+.button {
+  border: 0;
+  border-radius: 2px;
+  margin-top: 4px;
+  padding: 15px 18px;
+  color: var(--paper);
+  background: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #29382f;
+}
+.button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.form-alert {
+  padding: 12px 14px;
+  border-left: 3px solid #a53b2c;
+  color: #7d2b20;
+  background: #f4e5df;
+  font-size: 12px;
+}
+.auth-card__switch {
+  margin-top: 26px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.auth-card__switch a {
+  color: var(--ink);
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+
+.page-loader {
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.page-loader__mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--acid);
+  font:
+    500 28px 'Newsreader',
+    serif;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 272px 1fr;
+  min-height: 100vh;
+}

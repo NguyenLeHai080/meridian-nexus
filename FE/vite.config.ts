@@ -1,5 +1,5 @@
 import { loadEnv, type Plugin } from 'vite'
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 
@@ -65,7 +65,24 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       environment: 'jsdom',
+      exclude: [...configDefaults.exclude, 'e2e/**'],
       setupFiles: './src/test/setup.ts',
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+        include: [
+          'src/core/api/errors.ts',
+          'src/core/auth/auth-navigation.ts',
+          'src/modules/auth/schemas/auth.schemas.ts',
+          'src/modules/commerce/store/cart-store.ts',
+        ],
+        thresholds: {
+          branches: 80,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+      },
     },
   }
 })

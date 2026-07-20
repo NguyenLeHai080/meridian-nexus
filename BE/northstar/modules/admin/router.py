@@ -1,4 +1,3 @@
-import json
 from datetime import UTC, datetime
 from typing import Annotated
 
@@ -19,6 +18,8 @@ from northstar.core.serialization import (
     product_dict,
     slugify,
 )
+from northstar.modules.admin.service import save_product as _save_product
+from northstar.modules.admin.service import select_options as _option
 from northstar.modules.storefront.router import _category, _promotion
 from northstar.schemas import (
     CategoryInput,
@@ -35,10 +36,6 @@ from northstar.schemas import (
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 Page = Annotated[int, Query(ge=1)]
 PerPage = Annotated[int, Query(ge=10, le=100)]
-
-
-def _option(values: list[str]) -> list[dict[str, str]]:
-    return [{"value": value, "label": value.replace("_", " ").title()} for value in values]
 
 
 @router.get("/dashboard", dependencies=[Depends(permission("dashboard.view"))])
@@ -133,34 +130,6 @@ def products(request: Request, db: DbSession, page: Page = 1, per_page: PerPage 
         [product_dict(db, dict(row), locale) for row in rows],
         meta=pagination_meta(page, per_page, total),
     )
-
-
-def _save_product(db: DbSession, payload: ProductInput, product_id: int | None = None) -> int:
-    values = payload.model_dump()
-    values["images"] = json.dumps([str(image) for image in payload.images])
-    values["now"] = datetime.now(UTC)
-    if product_id is None:
-        values["slug"] = slugify(payload.name)
-        result = db.execute(
-            text(
-                "INSERT INTO products(category_id,name,slug,sku,excerpt,description,price,sale_price,stock,images,status,is_featured,published_at,created_at,updated_at) "
-                "VALUES (:category_id,:name,:slug,:sku,:excerpt,:description,:price,:sale_price,:stock,:images,:status,:is_featured,:published_at,:now,:now) RETURNING id"
-            ),
-            values,
-        )
-        return int(result.scalar_one())
-    values["id"] = product_id
-    result = db.execute(
-        text(
-            "UPDATE products SET category_id=:category_id,name=:name,sku=:sku,excerpt=:excerpt,description=:description,"
-            "price=:price,sale_price=:sale_price,stock=:stock,images=:images,status=:status,is_featured=:is_featured,"
-            "published_at=:published_at,updated_at=:now WHERE id=:id AND deleted_at IS NULL"
-        ),
-        values,
-    )
-    if result.rowcount != 1:
-        raise ApiError("Product not found.", "NOT_FOUND", 404)
-    return product_id
 
 
 def _product_response(

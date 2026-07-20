@@ -1,0 +1,2358 @@
+:root {
+  --nail-ink: #24231f;
+  --nail-muted: #716d67;
+  --nail-blush: #f7e9e7;
+  --nail-petal: #eebdb7;
+  --nail-cream: #fffaf8;
+  --nail-line: rgba(36, 35, 31, 0.14);
+}
+
+.storefront {
+  background: var(--nail-cream);
+  color: var(--nail-ink);
+}
+
+.announcement {
+  background: var(--nail-ink);
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.store-header {
+  min-height: 86px;
+  padding: 0 5vw;
+  background: rgba(255, 250, 248, 0.94);
+  border-bottom: 1px solid var(--nail-line);
+  backdrop-filter: blur(18px);
+}
+
+.store-logo {
+  gap: 0.7rem;
+  color: var(--nail-ink);
+  font-family: 'Newsreader', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.store-logo img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.store-logo strong {
+  font-weight: 500;
+}
+
+.store-header nav {
+  gap: 2rem;
+}
+
+.store-header nav a,
+.store-actions > a {
+  color: var(--nail-ink);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.store-header nav a::after {
+  background: var(--nail-petal);
+}
+
+.header-booking {
+  padding: 0.8rem 1.15rem;
+  border: 1px solid var(--nail-ink);
+}
+
+.nail-home {
+  overflow: hidden;
+}
+
+[data-nail-reveal] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 800ms ease,
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.store-logo strong {
+  display: flex;
+  flex-direction: column;
+  font-family: Georgia, serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+.store-logo small {
+  margin-top: 0.1rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.3rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+}
+.nail-original {
+  background: #fff8f7;
+  color: #292624;
+  font-family: Arial, sans-serif;
+}
+.nail-original h1,
+.nail-original h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+.nail-hero--original {
+  position: relative;
+  min-height: 720px;
+  grid-template-columns: 48% 52%;
+  overflow: hidden;
+  background: #fdf0ef;
+}
+.nail-hero--original .nail-hero__content {
+  z-index: 2;
+  padding: 12rem 2rem 8rem max(7vw, 2rem);
+}
+.nail-hero--original .nail-hero__brand {
+  color: #b47670;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+.nail-hero--original h1 {
+  max-width: 620px;
+  margin: 1rem 0 2rem;
+  font-size: clamp(4rem, 6.1vw, 6.8rem);
+  line-height: 0.98;
+}
+.nail-hero__model {
+  position: relative;
+  display: flex;
+  min-height: 720px;
+  align-items: flex-end;
+  justify-content: center;
+}
+.nail-hero__model img {
+  position: relative;
+  z-index: 2;
+  width: min(88%, 650px);
+  max-height: 690px;
+  object-fit: contain;
+  object-position: bottom;
+}
+.nail-hero__shape {
+  position: absolute;
+  right: 5%;
+  bottom: 7%;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #efc2bd;
+}
+.nail-button--outline {
+  border: 1px solid #e5b2ad;
+  background: transparent;
+  color: #292624;
+}
+.nail-about {
+  position: relative;
+  display: grid;
+  max-width: 1180px;
+  min-height: 650px;
+  margin: 0 auto;
+  padding: 110px 40px;
+  grid-template-columns: 48% 52%;
+  align-items: center;
+  background: #fff;
+}
+.nail-about__photos {
+  position: relative;
+  min-height: 430px;
+}
+.nail-about__photos img {
+  position: absolute;
+  object-fit: cover;
+  box-shadow: 0 18px 45px rgba(48, 30, 27, 0.12);
+}
+.nail-about__photos img:first-child {
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 245px;
+}
+.nail-about__photos img:last-child {
+  right: 10%;
+  bottom: 0;
+  width: 70%;
+  height: 340px;
+}
+.nail-about__content h2,
+.nail-quality h2 {
+  margin: 0.35rem 0 1.25rem;
+  font-size: clamp(3rem, 4vw, 5rem);
+}
+.nail-about__content > p,
+.nail-quality p,
+.nail-story__copy > p {
+  color: #5f5955;
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+.nail-kicker,
+.nail-section-heading > span {
+  color: #6b625e;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+.nail-kicker strong {
+  padding: 0.2rem 0.45rem;
+  background: #f4c4bf;
+  color: #fff;
+  font-weight: 500;
+}
+.nail-about__leaf {
+  position: absolute;
+  top: -55px;
+  right: 3%;
+  width: 210px;
+  filter: drop-shadow(0 18px 12px rgba(0, 0, 0, 0.16));
+}
+.nail-services {
+  padding: 110px max(6vw, 25px);
+  background: #fdf0ef;
+}
+.nail-section-heading h2 {
+  margin: 0.35rem 0 3rem;
+  font-size: clamp(3rem, 4.5vw, 5.4rem);
+}
+.nail-service-grid {
+  max-width: 1180px;
+  margin: auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.nail-service-grid article {
+  min-height: 300px;
+  padding: 38px 28px;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(77, 45, 40, 0.06);
+  text-align: center;
+}
+.nail-service-grid article > span {
+  display: none;
+}
+.nail-service-grid img {
+  width: 82px;
+  height: 82px;
+}
+.nail-service-grid h3 {
+  font-family: Georgia, serif;
+  font-size: 1.2rem;
+}
+.nail-quality {
+  display: grid;
+  padding: 110px max(7vw, 30px);
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 80px;
+  background: #fff;
+}
+.nail-quality > div:first-child {
+  align-self: center;
+}
+.nail-quality__offers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.nail-quality__offers article {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  background: #f3d3cf;
+}
+.nail-quality__offers img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nail-quality__offers strong {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  font-family: Georgia, serif;
+  text-align: center;
+}
+.nail-story {
+  min-height: 690px;
+  grid-template-columns: 48% 52%;
+  background: #fff;
+}
+.nail-story__copy {
+  padding: 110px 5vw;
+}
+.nail-story__copy h2 span {
+  display: block;
+  color: #e2a7a1;
+  font-size: 0.42em;
+  text-transform: uppercase;
+}
+.nail-story__tiles {
+  display: grid;
+  width: 330px;
+  margin-top: 35px;
+  grid-template-columns: 1fr 1fr;
+}
+.nail-story__tiles span {
+  display: grid;
+  min-height: 100px;
+  place-items: center;
+  background: #111;
+  color: #fff;
+  font-size: 0.72rem;
+}
+.nail-story__tiles span:nth-child(2) {
+  background: #efb9b3;
+}
+.nail-story__tiles span:last-child {
+  background: #fff;
+  color: #222;
+}
+.nail-story__image img {
+  height: 100%;
+  object-fit: cover;
+}
+.nail-pricing {
+  padding: 110px max(7vw, 30px);
+  background: #fdf0ef;
+}
+.nail-pricing__grid {
+  display: grid;
+  max-width: 1100px;
+  margin: auto;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.nail-pricing__grid article {
+  display: grid;
+  padding: 18px;
+  grid-template-columns: 110px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  background: #fff;
+}
+.nail-pricing__grid img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+}
+.nail-pricing__grid h3 {
+  margin: 0 0 8px;
+  font-family: Georgia, serif;
+}
+.nail-pricing__grid p {
+  margin: 0;
+  color: #766e69;
+  font-size: 0.76rem;
+}
+.nail-pricing__grid > article > strong {
+  color: #d9938b;
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+}
+.nail-journal {
+  padding: 110px max(7vw, 30px);
+  background: #fff;
+}
+.nail-journal__grid {
+  max-width: 1100px;
+  margin: auto;
+}
+.nail-booking {
+  min-height: 460px;
+  background:
+    linear-gradient(rgba(28, 20, 18, 0.55), rgba(28, 20, 18, 0.55)),
+    url('/nail-assets/TNV_5898-Edit.jpg') center/cover;
+  color: #fff;
+}
+.nail-booking > img {
+  width: 68px;
+  filter: brightness(0) invert(1);
+}
+.nail-booking p {
+  margin: 1rem 0 0;
+}
+
+@media (max-width: 800px) {
+  .nail-hero--original {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+  .nail-hero--original .nail-hero__content {
+    padding: 7rem 7vw 3rem;
+  }
+  .nail-hero--original h1 {
+    font-size: clamp(3.4rem, 15vw, 5.5rem);
+  }
+  .nail-hero__model {
+    min-height: 460px;
+  }
+  .nail-about,
+  .nail-quality,
+  .nail-story {
+    grid-template-columns: 1fr;
+  }
+  .nail-about {
+    padding: 70px 24px;
+  }
+  .nail-about__photos {
+    min-height: 390px;
+  }
+  .nail-about__content {
+    padding-top: 50px;
+  }
+  .nail-service-grid,
+  .nail-pricing__grid {
+    grid-template-columns: 1fr;
+  }
+  .nail-quality {
+    padding: 70px 24px;
+    gap: 45px;
+  }
+  .nail-story__copy {
+    padding: 70px 24px;
+  }
+}
+
+[data-nail-reveal].nail-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nail-eyebrow {
+  display: block;
+  color: #a56f68;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nail-hero {
+  display: grid;
+  min-height: 760px;
+  grid-template-columns: 0.9fr 1.1fr;
+  background: var(--nail-blush);
+}
+
+.nail-hero__content {
+  align-self: center;
+  max-width: 620px;
+  padding: 8vw 4vw 8vw 8vw;
+}
+
+.nail-hero h1,
+.nail-intro h2,
+.nail-section-heading h2,
+.nail-story h2,
+.nail-booking h2 {
+  margin: 1rem 0 1.4rem;
+  font-family: 'Newsreader', serif;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.nail-hero h1 {
+  max-width: 11ch;
+  font-size: clamp(4rem, 7vw, 7.6rem);
+  line-height: 0.91;
+}
+
+.nail-hero__content > p,
+.nail-intro__copy > p,
+.nail-story__copy > p,
+.nail-section-heading > p {
+  max-width: 52ch;
+  color: var(--nail-muted);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.nail-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.2rem;
+}
+
+.nail-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.nail-button:hover {
+  transform: translateY(-2px);
+}
+
+.nail-button--dark {
+  background: var(--nail-ink);
+  color: #fff;
+}
+
+.nail-button--light {
+  border: 1px solid var(--nail-ink);
+  color: var(--nail-ink);
+}
+
+.nail-hero__image {
+  position: relative;
+  min-height: 650px;
+}
+
+.nail-hero__image > img:first-child {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nail-hero__image .nail-leaf {
+  position: absolute;
+  right: -4rem;
+  bottom: -5rem;
+  width: min(34vw, 420px);
+  filter: drop-shadow(0 24px 30px rgba(22, 64, 34, 0.2));
+  animation: nail-leaf-float 6s ease-in-out infinite;
+}
+
+@keyframes nail-leaf-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(2deg);
+  }
+}
+
+.nail-intro {
+  display: grid;
+  max-width: 1240px;
+  min-height: 720px;
+  align-items: center;
+  margin: 0 auto;
+  padding: 8rem 5vw;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 8vw;
+}
+
+.nail-intro__image {
+  position: relative;
+  padding: 0 0 3rem 3rem;
+}
+
+.nail-intro__image::before {
+  position: absolute;
+  inset: 3rem 3rem 0 0;
+  border: 1px solid var(--nail-petal);
+  content: '';
+}
+
+.nail-intro__image img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.nail-intro h2,
+.nail-story h2,
+.nail-booking h2 {
+  font-size: clamp(3.2rem, 5vw, 5.5rem);
+  line-height: 0.98;
+}
+
+.nail-text-link {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--nail-ink);
+  color: var(--nail-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nail-services,
+.nail-gallery,
+.nail-journal {
+  padding: 8rem 5vw;
+}
+
+.nail-services {
+  background: #f9f1ef;
+}
+
+.nail-section-heading {
+  max-width: 650px;
+  margin: 0 auto 4.5rem;
+  text-align: center;
+}
+
+.nail-section-heading h2 {
+  font-size: clamp(3rem, 5vw, 5rem);
+  line-height: 1;
+}
+
+.nail-section-heading > p {
+  margin: 0 auto;
+}
+
+.nail-service-grid {
+  display: grid;
+  max-width: 1280px;
+  margin: 0 auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--nail-line);
+  border-left: 1px solid var(--nail-line);
+}
+
+.nail-service-grid article {
+  position: relative;
+  min-height: 420px;
+  padding: 2rem;
+  border-right: 1px solid var(--nail-line);
+  border-bottom: 1px solid var(--nail-line);
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.nail-service-grid article:hover {
+  z-index: 1;
+  background: #fff;
+  transform: translateY(-6px);
+}
+
+.nail-service-grid article > span {
+  color: #a56f68;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+}
+
+.nail-service-grid img {
+  display: block;
+  width: 78px;
+  height: 78px;
+  margin: 4rem 0 2rem;
+  object-fit: contain;
+}
+
+.nail-service-grid h3 {
+  font-family: 'Newsreader', serif;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.nail-service-grid p {
+  min-height: 4.8rem;
+  color: var(--nail-muted);
+  line-height: 1.65;
+}
+
+.nail-service-grid a {
+  color: var(--nail-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nail-story {
+  display: grid;
+  min-height: 760px;
+  grid-template-columns: 1fr 1fr;
+  background: var(--nail-ink);
+  color: #fff;
+}
+
+.nail-story__copy {
+  align-self: center;
+  padding: 8vw;
+}
+
+.nail-story__copy > p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nail-story dl {
+  display: flex;
+  gap: 4rem;
+  margin: 3rem 0;
+}
+
+.nail-story dl div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.nail-story dt {
+  font-family: 'Newsreader', serif;
+  font-size: 3rem;
+}
+
+.nail-story dd {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nail-story .nail-button--dark {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.nail-story__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nail-gallery {
+  background: #fff;
+}
+
+.nail-gallery__grid {
+  display: grid;
+  max-width: 1300px;
+  margin: 0 auto;
+  grid-template-columns: 1.25fr 0.75fr 0.75fr;
+  grid-template-rows: 320px 320px;
+  gap: 1rem;
+}
+
+.nail-gallery__grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nail-gallery__grid img:first-child {
+  grid-row: 1 / 3;
+}
+
+.nail-gallery__grid img:nth-child(4) {
+  grid-column: 2 / 4;
+}
+
+.nail-journal {
+  background: var(--nail-blush);
+}
+
+.nail-journal__grid {
+  display: grid;
+  max-width: 1200px;
+  margin: 0 auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.nail-journal article {
+  background: #fff;
+  padding-bottom: 2rem;
+}
+
+.nail-journal article img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.nail-journal article h3,
+.nail-journal article p {
+  margin-right: 1.5rem;
+  margin-left: 1.5rem;
+}
+
+.nail-journal article h3 {
+  margin-top: 1.5rem;
+  font-family: 'Newsreader', serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+.nail-journal article h3 a {
+  color: var(--nail-ink);
+}
+
+.nail-journal article p {
+  color: var(--nail-muted);
+  line-height: 1.65;
+}
+
+.nail-booking {
+  padding: 10rem 5vw;
+  background: #fff;
+  text-align: center;
+}
+
+.store-footer {
+  background: #201f1c;
+}
+
+.store-logo--light img {
+  filter: invert(1);
+}
+
+.page-hero,
+.checkout-page > header,
+.profile-page > header,
+.journal-page > header {
+  padding-top: 7rem;
+  padding-bottom: 5rem;
+  background: var(--nail-blush);
+}
+
+.page-hero h1,
+.checkout-page > header h1,
+.profile-page > header h1,
+.journal-page > header h1 {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(3.4rem, 7vw, 6.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.product-card__image,
+.journal-grid img,
+.article-page > img {
+  background: #f3e8e5;
+}
+
+.product-card__image img,
+.journal-grid img {
+  filter: saturate(0.82);
+}
+
+.product-card h3,
+.journal-grid h3,
+.product-detail h1,
+.contact-page h1,
+.about-page h1 {
+  font-family: 'Newsreader', serif;
+  font-weight: 500;
+}
+
+.store-button {
+  border-radius: 0;
+  background: var(--nail-ink);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.store-button:hover {
+  background: #a56f68;
+}
+
+.products-toolbar input,
+.contact-form input,
+.contact-form textarea,
+.checkout-page input,
+.profile-page input {
+  border-radius: 0;
+  border-color: var(--nail-line);
+  background: #fff;
+}
+
+.category-filter button[aria-pressed='true'] {
+  background: var(--nail-ink);
+  color: #fff;
+}
+
+.chat-launcher {
+  background: #a56f68;
+}
+
+@media (max-width: 980px) {
+  .store-header nav,
+  .store-actions > a:not(.header-booking) {
+    display: none;
+  }
+
+  .nail-hero,
+  .nail-intro,
+  .nail-story {
+    grid-template-columns: 1fr;
+  }
+
+  .nail-hero__content {
+    padding: 7rem 7vw;
+  }
+
+  .nail-hero__image {
+    min-height: 560px;
+  }
+
+  .nail-service-grid,
+  .nail-journal__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nail-story__image {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 620px) {
+  .store-header {
+    min-height: 72px;
+    padding: 0 1.25rem;
+  }
+
+  .store-logo strong {
+    display: none;
+  }
+
+  .nail-hero {
+    min-height: auto;
+  }
+
+  .nail-hero h1 {
+    font-size: 3.7rem;
+  }
+
+  .nail-hero__image,
+  .nail-story__image {
+    min-height: 420px;
+  }
+
+  .nail-intro,
+  .nail-services,
+  .nail-gallery,
+  .nail-journal {
+    padding: 5rem 1.25rem;
+  }
+
+  .nail-intro__image {
+    padding: 0 0 1.5rem 1.5rem;
+  }
+
+  .nail-service-grid,
+  .nail-journal__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nail-service-grid article {
+    min-height: 360px;
+  }
+
+  .nail-story__copy {
+    padding: 5rem 1.25rem;
+  }
+
+  .nail-story dl {
+    gap: 2rem;
+  }
+
+  .nail-gallery__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, 240px);
+  }
+
+  .nail-gallery__grid img:first-child,
+  .nail-gallery__grid img:nth-child(4) {
+    grid-row: auto;
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-nail-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .nail-hero__image .nail-leaf {
+    animation: none;
+  }
+}
+
+.nail-original .nail-booking {
+  min-height: 460px;
+  background:
+    linear-gradient(rgba(28, 20, 18, 0.55), rgba(28, 20, 18, 0.55)),
+    url('/nail-assets/TNV_5898-Edit.jpg') center / cover;
+  color: #fff;
+}
+
+.nail-original .nail-section-heading h2 > span {
+  display: inline-block;
+  width: 100px;
+  margin-left: 15px;
+  color: #efc0b8;
+  font-size: 30px;
+  line-height: 26px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.nail-original .nail-services .nail-section-heading > p,
+.nail-original .nail-journal .nail-section-heading > p {
+  max-width: 720px;
+  margin: -20px auto 55px;
+  color: #211e1c;
+  font-size: 14px;
+  text-align: center;
+}
+
+.nail-original .nail-quality > div:first-child {
+  height: 612px;
+  padding: 70px 60px;
+  background: #fff9f9;
+}
+
+.nail-original .nail-story {
+  background: #fff;
+  color: #211e1c;
+}
+
+.nail-original .nail-story__copy {
+  color: #211e1c;
+}
+
+.nail-original .nail-story__copy h2,
+.nail-original .nail-story__copy > p {
+  color: #211e1c;
+}
+
+.nail-original .nail-pricing {
+  position: relative;
+  display: block;
+  background: #fff9f9 url('/nail-assets/price-bg-1-1.jpg') left center / 55% 100% no-repeat;
+}
+
+.nail-original .nail-pricing .nail-section-heading {
+  width: 48%;
+  margin-left: 52%;
+  text-align: left;
+}
+
+.nail-original .nail-pricing .nail-section-heading h2 {
+  margin-top: 5px;
+}
+
+.nail-original .nail-pricing .nail-section-heading > p {
+  margin: 0;
+  color: #211e1c;
+  text-align: left;
+}
+
+.nail-original .nail-pricing .nail-section-heading strong {
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: #efc0b8;
+  color: #fff;
+}
+
+.nail-original .nail-pricing__grid {
+  width: 48%;
+  padding: 60px;
+  margin: 0 0 0 52%;
+  grid-template-columns: 1fr;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 19px 62px -43px #efc0b8;
+}
+
+.nail-original .nail-pricing__grid article {
+  padding: 0 0 20px;
+  border-bottom: 1px dashed #ead6d2;
+}
+
+.nail-original .nail-journal .nail-section-heading h2 {
+  margin-bottom: 40px;
+}
+
+.nail-footer {
+  background: #fff;
+  color: #211e1c;
+}
+
+.nail-footer h3 {
+  color: #211e1c;
+}
+
+.nail-footer p,
+.nail-footer a {
+  color: #49413d;
+}
+
+.nail-footer__bottom {
+  border-top-color: #eee;
+  color: #8d8580;
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-quality {
+    padding-right: 75px;
+    padding-left: 75px;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .nail-original .nail-story {
+    padding-right: 75px;
+    padding-left: 75px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nail-original .nail-brand-strip {
+    margin-right: -75px;
+    margin-left: -75px;
+  }
+
+  .nail-original .nail-pricing__grid {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .storefront > .nail-footer {
+    height: 710px;
+    min-height: 710px;
+    padding: 150px max(calc((100vw - 1290px) / 2), 30px) 50px;
+    background: #fff;
+    color: #211e1c;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-quality {
+    display: grid;
+    height: 962px;
+    padding: 150px 74px;
+    grid-template-columns: 637px 637px;
+    gap: 19px;
+    align-items: start;
+  }
+
+  .nail-original .nail-quality > div:first-child {
+    width: 637px;
+    height: 642px;
+    padding: 70px 60px;
+  }
+
+  .nail-original .nail-quality h2 {
+    margin: 0;
+    font-size: 36px;
+    line-height: 36px;
+  }
+
+  .nail-original .nail-quality p {
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+
+  .nail-original .nail-quality__offers {
+    width: 637px;
+    height: 662px;
+  }
+
+  .nail-original .nail-quality__offers .nail-offer {
+    width: 637px;
+    height: 306px;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-services {
+    position: relative;
+    padding: 30px 0;
+  }
+
+  .nail-original .nail-services .nail-section-heading {
+    position: absolute;
+    top: 90px;
+    left: 405px;
+    width: 630px;
+    margin: 0;
+  }
+
+  .nail-original .nail-services .nail-section-heading h2 {
+    margin: 0 0 15px;
+    font-size: 74px;
+    line-height: 74px;
+  }
+
+  .nail-original .nail-services .nail-section-heading > p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+
+  .nail-original .nail-service-viewport {
+    position: absolute;
+    top: 281px;
+    left: 60px;
+    width: 1320px;
+    max-width: none;
+    height: 565px;
+  }
+
+  .nail-original .nail-service-grid {
+    width: max-content;
+    height: 565px;
+  }
+
+  .nail-original .nail-service-grid article {
+    width: 330px;
+    min-width: 330px;
+    height: 505px;
+    min-height: 0;
+    padding: 0 15px;
+  }
+
+  .nail-original .nail-service-grid article:nth-child(even) {
+    padding-top: 60px;
+  }
+
+  .nail-original .nail-service-icon {
+    width: 300px;
+    height: 171px;
+  }
+
+  .nail-original .nail-service-grid h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 32px;
+  }
+
+  .nail-original .nail-service-grid article > p {
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-about {
+    position: relative;
+    display: block;
+    padding: 0;
+  }
+
+  .nail-original .nail-about__photos {
+    position: absolute;
+    top: 194px;
+    left: 75px;
+    width: 630px;
+    height: 540px;
+    min-height: 540px;
+  }
+
+  .nail-original .nail-about__photos img:nth-child(1) {
+    top: -120px;
+    left: 20px;
+    width: 200px;
+    height: 200px;
+  }
+
+  .nail-original .nail-about__photos img:nth-child(2) {
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: 0;
+    width: 470px;
+    height: 540px;
+  }
+
+  .nail-original .nail-about__photos img:nth-child(3) {
+    right: 0;
+    bottom: -150px;
+    width: 200px;
+    height: 200px;
+  }
+
+  .nail-original .nail-about__content {
+    position: absolute;
+    top: 330px;
+    left: 735px;
+    width: 630px;
+  }
+
+  .nail-original .nail-about__content h2 {
+    margin: 0 0 20px;
+    font-size: 36px;
+    line-height: 36px;
+  }
+
+  .nail-original .nail-about__content > p {
+    max-width: none;
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+
+  .nail-original .nail-about__content .nail-kicker {
+    margin-bottom: 25px;
+    font-size: 18px;
+    line-height: 25.6px;
+  }
+}
+
+@media (min-width: 981px) {
+  .storefront > .store-header {
+    display: flex;
+    height: 90px;
+    padding: 0 60px;
+    grid-template-columns: none;
+  }
+
+  .store-header .store-logo {
+    width: 230px;
+    flex: 0 0 230px;
+    gap: 8px;
+  }
+
+  .store-header .store-logo img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .store-header nav {
+    display: flex;
+    height: 90px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 31px;
+  }
+
+  .store-header nav a,
+  .store-actions > a {
+    font-family: GoldenBook, Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: capitalize;
+  }
+
+  .store-actions {
+    display: flex;
+    width: 336px;
+    flex: 0 0 336px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .store-actions .language-switcher {
+    padding-right: 10px;
+    border-right-color: rgba(79, 66, 62, 0.18);
+  }
+
+  .store-actions .language-trigger {
+    min-width: 52px;
+    height: 42px;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    border: 1px solid rgba(79, 66, 62, 0.08);
+    border-radius: 999px;
+    color: #665b58;
+    background: rgba(255, 255, 255, 0.82);
+    font-size: 10px;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .store-actions .language-trigger:hover,
+  .store-actions .language-trigger[aria-expanded='true'] {
+    border-color: rgba(165, 111, 104, 0.35);
+    color: #9b655f;
+    background: #fff;
+    transform: translateY(-1px);
+  }
+
+  .store-actions .language-trigger svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .header-search,
+  .header-account {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(79, 66, 62, 0.08);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82);
+    line-height: 1;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .header-search svg,
+  .header-account svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.55;
+  }
+
+  .header-search:hover,
+  .header-account:hover {
+    border-color: rgba(165, 111, 104, 0.35);
+    color: #9b655f;
+    background: #fff;
+    transform: translateY(-1px);
+  }
+
+  .store-actions .header-booking {
+    display: inline-flex;
+    min-width: 126px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 20px;
+    border-color: #dca59d;
+    background: #efc0b8;
+    color: #fff;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .store-actions .header-booking svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.55;
+  }
+
+  .store-actions .header-booking:hover {
+    border-color: #a56f68;
+    background: #a56f68;
+    box-shadow: 0 10px 24px rgba(165, 111, 104, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .nail-original .nail-hero {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: #fff5f5;
+  }
+
+  .nail-original .nail-hero__content {
+    position: absolute;
+    z-index: 5;
+    top: 250px;
+    left: 60px;
+    width: 409px;
+    max-width: none;
+    padding: 0;
+  }
+
+  .nail-original .nail-hero__brand {
+    margin: 0 0 18px;
+    color: #211e1c;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+
+  .nail-original .nail-hero h1 {
+    width: 450px;
+    max-width: none;
+    margin: 0 0 28px;
+    font-size: 56px;
+    line-height: 56px;
+    letter-spacing: 0;
+  }
+
+  .nail-original .nail-hero__model {
+    position: absolute;
+    top: 0;
+    left: 291px;
+    width: 858px;
+    height: 956px;
+    min-height: 0;
+  }
+
+  .nail-original .nail-hero__model img {
+    width: 858px;
+    height: 956px;
+    max-height: none;
+    object-fit: contain;
+  }
+
+  .nail-original .nail-hero__shape {
+    top: 30px;
+    right: auto;
+    bottom: auto;
+    left: 154px;
+  }
+}
+
+.nail-original .nail-journal__grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.nail-footer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 70px;
+  background: #211e1c;
+  color: #fff;
+}
+
+.nail-footer h3 {
+  margin: 0 0 30px;
+  color: #fff;
+  font-family: GoldenBook, Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.nail-footer p,
+.nail-footer a {
+  color: rgb(255 255 255 / 70%);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.nail-footer__direction {
+  display: inline-flex;
+  padding: 11px 18px;
+  margin-top: 18px;
+  border: 1px solid #efc0b8;
+  text-transform: uppercase;
+}
+
+.nail-footer__address {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #49413d;
+  font-style: normal;
+  line-height: 1.7;
+}
+
+.nail-footer__posts > a {
+  display: grid;
+  margin-bottom: 18px;
+  grid-template-columns: 70px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.nail-footer__posts img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+}
+
+.nail-footer__bottom {
+  display: flex;
+  padding-top: 35px;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  align-self: end;
+  color: rgb(255 255 255 / 55%);
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .nail-original .nail-journal__grid,
+  .nail-footer {
+    grid-template-columns: 1fr;
+  }
+  .nail-footer__bottom {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-story {
+    position: relative;
+    display: block;
+    padding: 30px 0;
+  }
+  .nail-original .nail-story__copy {
+    position: absolute;
+    top: 84px;
+    left: 74px;
+    width: 637px;
+    height: 650px;
+    padding: 0;
+  }
+  .nail-original .nail-story__copy h2 {
+    margin: 0 0 15px;
+    font-size: 74px;
+    line-height: 74px;
+  }
+  .nail-original .nail-story__copy > p {
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+  .nail-original .nail-story__tiles {
+    width: 430px;
+    height: 206px;
+    margin-top: 34px;
+  }
+  .nail-original .nail-story__tiles span {
+    width: 200px;
+    height: 206px;
+    min-height: 206px;
+    padding: 50px 0 50px 10px;
+  }
+  .nail-original .nail-story__image {
+    position: absolute;
+    top: 30px;
+    left: 730px;
+    width: 637px;
+    height: 760px;
+  }
+  .nail-original .nail-story__image img {
+    width: 637px;
+    height: 760px;
+  }
+  .nail-original .nail-story__leaf {
+    position: absolute;
+    z-index: 4;
+    top: 719px;
+    left: 1126px;
+    width: 350px;
+    height: auto;
+    animation: nailLeaf 4s linear infinite;
+  }
+  .nail-original .nail-brand-strip {
+    position: absolute;
+    top: 990px;
+    left: 0;
+    width: 1440px;
+    height: 288px;
+    padding: 70px 75px;
+    margin: 0;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-pricing {
+    position: relative;
+    display: block;
+    padding: 30px 0;
+  }
+  .nail-original .nail-pricing .nail-section-heading {
+    position: absolute;
+    top: 84px;
+    left: 735px;
+    width: 630px;
+    margin: 0;
+  }
+  .nail-original .nail-pricing .nail-section-heading h2 {
+    margin: 0 0 15px;
+    font-size: 74px;
+    line-height: 74px;
+  }
+  .nail-original .nail-pricing__grid {
+    position: absolute;
+    top: 188px;
+    left: 735px;
+    width: 630px;
+    height: 885px;
+    padding: 60px 60px 40px;
+    margin: 0;
+  }
+  .nail-original .nail-pricing__grid article {
+    width: 510px;
+    height: 192px;
+    padding: 0;
+    grid-template-columns: 120px 1fr auto;
+    gap: 30px;
+  }
+  .nail-original .nail-pricing__grid img {
+    width: 120px;
+    height: 120px;
+  }
+  .nail-original .nail-pricing__grid h3 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+@media (min-width: 981px) {
+  .nail-original .nail-journal {
+    position: relative;
+    padding: 100px 0;
+    background: #fff9f9;
+  }
+  .nail-original .nail-journal .nail-section-heading {
+    position: absolute;
+    top: 100px;
+    left: 405px;
+    width: 630px;
+    margin: 0;
+  }
+  .nail-original .nail-journal .nail-section-heading h2 {
+    margin: 0 0 15px;
+    font-size: 75px;
+    line-height: 97.5px;
+  }
+  .nail-original .nail-journal .nail-section-heading > p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 25.6px;
+  }
+  .nail-original .nail-journal__grid {
+    position: absolute;
+    top: 289px;
+    left: 75px;
+    width: 1290px;
+    height: 393px;
+    grid-template-columns: repeat(3, 417px);
+    gap: 19.5px;
+  }
+  .nail-original .nail-journal article {
+    width: 417px;
+    height: 393px;
+    padding: 0;
+  }
+  .nail-original .nail-journal article img {
+    width: 417px;
+    height: 294px;
+    object-fit: cover;
+  }
+  .nail-original .nail-booking {
+    position: relative;
+    padding: 60px 0;
+  }
+  .nail-original .nail-booking h2 {
+    width: 1290px;
+    margin: 0 0 40px;
+    font-size: 60px;
+    line-height: 60px;
+  }
+  .nail-original .nail-booking > img {
+    width: 64px;
+    height: 64px;
+  }
+  .storefront > .nail-footer {
+    display: grid;
+    height: 710px;
+    padding: 60px 60px 0;
+    grid-template-columns: repeat(3, 440px);
+    gap: 0;
+  }
+  .nail-footer > section {
+    width: 440px;
+    height: 482px;
+    padding: 0 15px 30px;
+  }
+  .nail-footer__bottom {
+    height: 168px;
+    padding: 35px 15px 0;
+  }
+}
+
+.nail-original .nail-booking h2,
+.nail-original .nail-booking p {
+  color: #fff;
+}
+
+.nail-original .nail-booking > img {
+  width: 68px;
+  filter: brightness(0) invert(1);
+}
+
+.nail-original .nail-hero__content {
+  animation: nailLightSpeedIn 1s ease-out both;
+}
+
+.nail-original .nail-hero__model img {
+  animation: nailFadeIn 2s 0.5s both;
+}
+
+.nail-original .nail-hero__shape {
+  width: 550px;
+  height: 550px;
+  animation: nailZoomIn 1s 1s both;
+  background: #fff;
+}
+
+.nail-original .nail-hero__model::before,
+.nail-original .nail-hero__model::after {
+  position: absolute;
+  width: 750px;
+  height: 750px;
+  border-radius: 50%;
+  animation: nailScaling 4s 1.3s linear infinite;
+  background: rgb(239 192 184 / 20%);
+  content: '';
+}
+
+.nail-original .nail-hero__model::after {
+  animation-delay: 3s;
+}
+
+.nail-original .nail-about__leaf {
+  animation: nailLeaf 6s linear infinite;
+}
+
+.nail-original .nail-service-viewport {
+  max-width: 1180px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.nail-original .nail-service-grid {
+  display: flex;
+  max-width: none;
+  gap: 0;
+  transition: transform 1s ease;
+}
+
+.nail-original .nail-service-grid article {
+  min-width: 25%;
+  min-height: 390px;
+  padding: 38px 28px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.nail-original .nail-service-grid article:nth-child(even) {
+  padding-top: 98px;
+}
+
+.nail-service-icon {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 45px;
+  margin-bottom: 40px;
+}
+
+.nail-service-icon > span {
+  display: inline-grid;
+  width: 100px;
+  height: 100px;
+  place-items: center;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 7px 27px -14px #efc0b8;
+}
+
+.nail-service-icon > span img {
+  width: 60px;
+  height: 60px;
+  transition: transform 0.6s ease;
+}
+
+.nail-service-icon__background {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 30px;
+  width: 100px !important;
+  height: 100px !important;
+  animation: nailServiceIcon 6s linear infinite;
+  opacity: 0.3;
+}
+
+.nail-service-grid article:nth-child(even) .nail-service-icon__background {
+  animation-direction: reverse;
+}
+
+.nail-service-grid article:hover .nail-service-icon > span img {
+  transform: rotateY(360deg);
+}
+
+@keyframes nailFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nailZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nailScaling {
+  0%,
+  100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes nailLightSpeedIn {
+  from {
+    opacity: 0;
+    transform: translateX(-80px) skewX(15deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes nailLeaf {
+  0%,
+  100% {
+    transform: translate(0) rotate(0);
+  }
+  50% {
+    transform: translate(18px, 12px) rotate(4deg);
+  }
+}
+
+@keyframes nailServiceIcon {
+  0%,
+  100% {
+    transform: translate(0) rotate(0);
+  }
+  50% {
+    transform: translate(12px, 8px) rotate(8deg);
+  }
+}
+
+@keyframes nailServiceSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 1199px) {
+  .nail-original .nail-service-grid article {
+    min-width: 33.333%;
+  }
+}
+
+@media (max-width: 991px) {
+  .nail-original .nail-service-grid article {
+    min-width: 50%;
+  }
+}
+
+@media (max-width: 767px) {
+  .nail-original .nail-service-grid article {
+    min-width: 100%;
+  }
+  .nail-original .nail-hero__shape {
+    width: 380px;
+    height: 380px;
+  }
+}
+
+@font-face {
+  font-family: 'GoldenBook';
+  src: url('/nail-assets/Goldenbook-Regular.otf') format('opentype');
+  font-display: swap;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'GoldenBook';
+  src: url('/nail-assets/Goldenbook-Bold.otf') format('opentype');
+  font-display: swap;
+  font-weight: 700;
+}
+
+@media (min-width: 981px) {
+  .storefront > .announcement {
+    display: none;
+  }
+  .storefront > .store-header {
+    position: absolute;
+    z-index: 50;
+    top: 0;
+    width: 100%;
+    min-height: 90px;
+    background: transparent;
+    border: 0;
+  }
+  .nail-original,
+  .nail-original p {
+    font-family: Roboto, Arial, sans-serif;
+  }
+  .nail-original h1,
+  .nail-original h2,
+  .nail-original h3,
+  .nail-original .nail-button {
+    font-family: GoldenBook, Georgia, serif;
+  }
+  .nail-original .nail-hero {
+    height: 760px;
+    min-height: 760px;
+  }
+  .nail-original .nail-about {
+    width: 100%;
+    max-width: none;
+    height: 1102px;
+    min-height: 1102px;
+    padding: 30px max(calc((100vw - 1170px) / 2), 30px);
+    grid-template-columns: 50% 50%;
+  }
+  .nail-original .nail-about__photos {
+    width: 570px;
+    min-height: 540px;
+  }
+  .nail-original .nail-about__photos img:first-child {
+    top: -120px;
+    left: 20px;
+    width: 200px;
+    height: 200px;
+  }
+  .nail-original .nail-about__photos img:last-child {
+    right: 0;
+    bottom: 0;
+    width: 470px;
+    height: 540px;
+  }
+
+  .nail-original .nail-about__photos img:nth-child(2) {
+    right: 0;
+    bottom: 0;
+    width: 470px;
+    height: 540px;
+  }
+
+  .nail-original .nail-about__photos img:nth-child(3) {
+    right: 0;
+    bottom: -150px;
+    width: 200px;
+    height: 200px;
+  }
+  .nail-original .nail-services {
+    height: 906px;
+    min-height: 906px;
+    padding: 115px max(calc((100vw - 1170px) / 2), 30px) 30px;
+  }
+  .nail-original .nail-quality {
+    height: 962px;
+    min-height: 962px;
+    padding: 150px max(calc((100vw - 1170px) / 2), 30px);
+  }
+  .nail-original .nail-story {
+    height: 1308px;
+    min-height: 1308px;
+    grid-template-rows: 760px 220px;
+    align-content: center;
+  }
+  .nail-original .nail-story__image {
+    height: 760px;
+  }
+  .nail-original .nail-pricing {
+    height: 1033px;
+    min-height: 1033px;
+    padding: 120px max(calc((100vw - 1170px) / 2), 30px);
+  }
+  .nail-original .nail-journal {
+    height: 861px;
+    min-height: 861px;
+    margin-top: 100px;
+    padding: 100px max(calc((100vw - 1170px) / 2), 30px);
+  }
+  .nail-original .nail-booking {
+    height: 450px;
+    min-height: 450px;
+    padding: 60px max(calc((100vw - 1170px) / 2), 30px);
+  }
+  .storefront > .store-footer {
+    min-height: 710px;
+    padding: 150px max(calc((100vw - 1170px) / 2), 30px) 50px;
+  }
+}
+
+.nail-original .nail-story__tiles {
+  width: 430px;
+  grid-template-columns: 200px 200px;
+  gap: 30px;
+}
+
+.nail-original .nail-story__tiles span {
+  display: flex;
+  min-height: 180px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 20px;
+  background: #000;
+  color: #efc0b8;
+  font-weight: 700;
+}
+
+.nail-original .nail-story__tiles span:nth-child(2) {
+  background: #efc0b8;
+  color: #fff;
+}
+
+@media (min-width: 981px) {
+  .storefront > footer.nail-footer {
+    display: grid;
+    height: 710px;
+    min-height: 710px;
+    padding: 60px 60px 0;
+    grid-template-columns: repeat(3, 440px);
+    gap: 0;
+    background: #fff;
+    color: #211e1c;
+  }
+
+  .storefront > footer.nail-footer > section {
+    width: 440px;
+    height: 482px;
+    padding: 0 15px 30px;
+  }
+
+  .storefront > footer.nail-footer h3 {
+    color: #211e1c;
+  }
+
+  .storefront > footer.nail-footer p,
+  .storefront > footer.nail-footer a {
+    color: #49413d;
+  }
+
+  .storefront > footer.nail-footer .nail-footer__bottom {
+    width: 1320px;
+    height: 168px;
+    padding: 35px 15px 0;
+    color: #8d8580;
+  }
+}
+
+.nail-original .nail-story__tiles strong {
+  color: #fff;
+  font-family: GoldenBook, Georgia, serif;
+  font-size: 80px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.nail-original .nail-brand-strip {
+  display: grid;
+  height: 220px;
+  padding: 45px max(calc((100vw - 1170px) / 2), 30px);
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 35px;
+  align-items: center;
+  background: #fff;
+}
+
+[data-nail-tilt] {
+  --nail-tilt-x: 0deg;
+  --nail-tilt-y: 0deg;
+  transform: perspective(1000px) rotateX(var(--nail-tilt-x)) rotateY(var(--nail-tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+
+.storefront > footer.nail-footer {
+  box-sizing: border-box;
+  background: #fff;
+  color: #211e1c;
+}
+
+.storefront > footer.nail-footer h3 {
+  color: #211e1c;
+}
+
+.storefront > footer.nail-footer p,
+.storefront > footer.nail-footer a,
+.storefront > footer.nail-footer span {
+  color: #49413d;
+}
+
+.storefront > footer.nail-footer .nail-footer__bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+@media (max-width: 980px) {
+  .storefront > .store-header {
+    position: relative;
+    top: auto;
+  }
+
+  .storefront > footer.nail-footer {
+    display: grid;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    padding: 64px 24px 30px;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    background: #fff;
+  }
+
+  .storefront > footer.nail-footer > section {
+    width: 100%;
+    height: auto;
+    padding: 0;
+  }
+
+  .storefront > footer.nail-footer h3 {
+    margin-bottom: 20px;
+    color: #211e1c;
+    font-size: 38px;
+  }
+
+  .storefront > footer.nail-footer p,
+  .storefront > footer.nail-footer a {
+    color: #49413d;
+  }
+
+  .storefront > footer.nail-footer .nail-footer__posts > a {
+    width: 100%;
+    grid-template-columns: 70px 1fr;
+  }
+
+  .storefront > footer.nail-footer .nail-footer__bottom {
+    width: 100%;
+    height: auto;
+    padding: 28px 0 0;
+    border-top: 1px solid #eee;
+    flex-direction: column;
+    align-items: flex-start;
+    grid-column: 1;
+  }
+}
+
+.nail-original .nail-brand-strip img {
+  width: 100%;
+  max-height: 105px;
+  object-fit: contain;
+}
+
+.nail-original .nail-pricing {
+  background:
+    linear-gradient(rgb(255 249 249 / 92%), rgb(255 249 249 / 92%)),
+    url('/nail-assets/price-bg-1-1.jpg') center / cover;
+}
+
+.nail-original .nail-quality__offers {
+  display: block;
+}
+
+.nail-original .nail-quality__offers .nail-offer {
+  position: relative;
+  min-height: 306px;
+  background-position: center;
+  background-size: cover;
+}
+
+.nail-original .nail-quality__offers .nail-offer + .nail-offer {
+  margin-top: 30px;
+}
+
+.nail-original .nail-offer--foundation {
+  background-image: url('/nail-assets/homepage_product_offer-banner-1.png');
+}
+
+.nail-original .nail-offer--cosmetic {
+  background-image: url('/nail-assets/homepage_product_offer-banner-2.png');
+}
+
+.nail-original .nail-offer > div {
+  position: absolute;
+  top: 50%;
+  right: 8%;
+  display: flex;
+  width: 42%;
+  flex-direction: column;
+  transform: translateY(-50%);
+}
+
+.nail-original .nail-offer--cosmetic > div {
+  right: auto;
+  left: 10%;
+  width: 55%;
+}
+
+.nail-original .nail-offer span {
+  font-size: 18px;
+}
+
+.nail-original .nail-offer strong {
+  position: static;
+  padding: 0;
+  margin: 8px 0 20px;
+  background: transparent;
+  font-family: GoldenBook, Georgia, serif;
+  font-size: 40px;
+  text-align: left;
+}
+
+.nail-original .nail-offer a {
+  width: fit-content;
+  padding: 10px 18px;
+  background: #fff;
+  color: #211e1c;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.nail-original .nail-booking {
+  background:
+    linear-gradient(rgb(28 20 18 / 55%), rgb(28 20 18 / 55%)),
+    url('/nail-assets/homepage_get_afree_quote_cta-img-1-1.jpg') center / cover;
+}

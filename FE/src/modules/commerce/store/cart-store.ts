@@ -1,5 +1,8 @@
 import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import type { Product } from '../types/commerce.types'
+
+export const CART_STORAGE_KEY = 'northstar-cart'
 
 export interface CartItem {
   product: Product
@@ -14,39 +17,62 @@ interface CartState {
   clear: () => void
 }
 
-export const useCartStore = create<CartState>((set) => ({
-  items: [],
-  add: (product) =>
-    set((state) => {
-      const existing = state.items.find((item) => item.product.id === product.id)
+export const useCartStore = create<CartState>()(
+  persist(
+    (set) => ({
+      items: [],
+      add: (product) =>
+        set((state) => {
+          if (product.stock <= 0) {
+            return state
+          }
 
-      if (existing === undefined) {
-        return { items: [...state.items, { product, quantity: 1 }] }
-      }
+          const existing = state.items.find((item) => item.product.id === product.id)
 
-      const items = state.items.map((item) => {
-        if (item.product.id === product.id) {
-          return { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-        }
+          if (existing === undefined) {
+            return { items: [...state.items, { product, quantity: 1 }] }
+          }
 
-        return item
-      })
+          const items = state.items.map((item) => {
+            if (item.product.id === product.id) {
+              return { ...item, product, quantity: Math.min(item.quantity + 1, product.stock) }
+            }
 
-      return { items }
+            return item
+          })
+
+          return { items }
+        }),
+      remove: (productId) =>
+        set((state) => ({ items: state.items.filter((item) => item.product.id !== productId) })),
+      setQuantity: (productId, quantity) =>
+        set((state) => {
+          const item = state.items.find((candidate) => candidate.product.id === productId)
+          if (item === undefined) {
+            return state
+          }
+          if (item.product.stock <= 0) {
+            return { items: state.items.filter((candidate) => candidate.product.id !== productId) }
+          }
+
+          const normalizedQuantity = Math.max(1, Math.min(Math.trunc(quantity), item.product.stock))
+          const items = state.items.map((candidate) => {
+            if (candidate.product.id === productId) {
+              return { ...candidate, quantity: normalizedQuantity }
+            }
+
+            return candidate
+          })
+
+          return { items }
+        }),
+      clear: () => set({ items: [] }),
     }),
-  remove: (productId) =>
-    set((state) => ({ items: state.items.filter((item) => item.product.id !== productId) })),
-  setQuantity: (productId, quantity) =>
-    set((state) => {
-      const items = state.items.map((item) => {
-        if (item.product.id === productId) {
-          return { ...item, quantity: Math.max(1, Math.min(quantity, item.product.stock)) }
-        }
-
-        return item
-      })
-
-      return { items }
-    }),
-  clear: () => set({ items: [] }),
-}))
+    {
+      name: CART_STORAGE_KEY,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ items: state.items }),
+      version: 1,
+    },
+  ),
+)

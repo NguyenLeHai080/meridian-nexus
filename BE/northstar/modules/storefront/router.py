@@ -16,6 +16,7 @@ from northstar.core.serialization import (
     product_dict,
     translated,
 )
+from northstar.modules.storefront.content import storefront_site
 from northstar.schemas import ContactInput
 
 router = APIRouter(prefix="/api/v1/storefront", tags=["storefront"])
@@ -60,11 +61,7 @@ def home(request: Request, db: DbSession) -> Response:
         text("SELECT value FROM site_settings WHERE key='storefront' LIMIT 1")
     ).scalar_one_or_none()
     settings = json_value(setting, {})
-    site = {}
-    if isinstance(settings, dict):
-        locales = settings.get("locales", {})
-        if isinstance(locales, dict):
-            site = locales.get(locale) or locales.get("en") or {}
+    site = storefront_site(settings, locale)
     products = (
         db.execute(
             text(

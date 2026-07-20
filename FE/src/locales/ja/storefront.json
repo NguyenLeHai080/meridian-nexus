@@ -1,4 +1,131 @@
 {
+  "homePage": {
+    "navigation": {
+      "home": "ホーム",
+      "about": "私たちについて",
+      "visit": "店舗案内",
+      "shop": "ショップ",
+      "sip": "ドリンク",
+      "contact": "お問い合わせ"
+    },
+    "actions": {
+      "search": "検索",
+      "bookNow": "今すぐ予約",
+      "bookAppointments": "予約する",
+      "ourService": "サービス一覧",
+      "makeCall": "電話する",
+      "readMore": "詳しく見る",
+      "shopNow": "今すぐ購入"
+    },
+    "hero": {
+      "brand": "Sixth Sense Spa & Nail Lounge",
+      "slides": { "healing": "心と身体、魂を癒す", "care": "ケアのための場所" }
+    },
+    "images": {
+      "hero": "スパ＆ネイルラウンジ",
+      "salon": "Sixth Sense サロン",
+      "reception": "サロン受付",
+      "treatment": "スパ施術室",
+      "event": "プライベートスパイベント"
+    },
+    "about": {
+      "kickerBefore": "ラウンジで",
+      "kickerStrong": "一人ひとりに合わせた美容サービス",
+      "kickerAfter": "をご提供します",
+      "title": "私たちについて",
+      "paragraph1": "Sixth Senseは、ヴォーン中心部に5,700平方フィートのラウンジを備えた上質なスパです。マニキュア、シェラック、ペディキュア、ワックス、マッサージなど、穏やかで贅沢な体験をご提供します。",
+      "paragraph2": "広々としたサロンには快適な施術室と高品質な製品を用意しています。使い捨て衛生基準とプロ仕様のネイル製品で、安全で上質なサービスをお届けします。"
+    },
+    "services": {
+      "eyebrow": "リラックスゾーン",
+      "title": "サービス",
+      "intro": "心からくつろぎ、ウェルネスに向き合いながら無料のお飲み物をお楽しみください。",
+      "items": {
+        "manicures": {
+          "title": "マニキュア",
+          "text": "上質なラウンジでリラックスマッサージ付きのハンドケアをお楽しみください。"
+        },
+        "pedicures": {
+          "title": "ペディキュア",
+          "text": "足元を清潔に整え、美しく健やかに保ちます。"
+        },
+        "manicurePedicure": {
+          "title": "マニキュア＆ペディキュア",
+          "text": "プロ仕様の製品を使った手足のトータルケアです。"
+        },
+        "shellac": {
+          "title": "シェラック",
+          "text": "艶やかで耐久性のある長持ちジェルカラーです。"
+        },
+        "artificialNails": {
+          "title": "人工爪",
+          "text": "イベントやパーティーに合わせたモダンな形とネイルアートです。"
+        },
+        "dippingPowders": {
+          "title": "ディップパウダー",
+          "text": "軽やかな強度と豊かな色で自然に美しい爪へ仕上げます。"
+        }
+      }
+    },
+    "quality": {
+      "kicker": "ピュアな製品 · 丁寧なケア",
+      "title": "最高品質の製品",
+      "text": "高品質な製品と厳格な滅菌方法のみを採用しています。贅沢なラウンジでゆっくりおくつろぎください。",
+      "foundation": "ベース",
+      "naturalTone": "ナチュラルトーン",
+      "cosmetic": "コスメ",
+      "floralCream": "フローラル＆ビューティークリーム"
+    },
+    "story": {
+      "kickerBefore": "最高の",
+      "kickerStrong": "イベント",
+      "kickerAfter": "をここで",
+      "title": "自分らしく",
+      "accent": "自分だけの空間で",
+      "text": "少人数のお祝いから大規模なイベントまで、5,700平方フィートの美しい施設と柔軟な空間で対応します。",
+      "capacity": "収容人数",
+      "squareFoot": "平方フィート"
+    },
+    "pricing": {
+      "kickerBefore": "特別な",
+      "kickerStrong": "オファー",
+      "kickerAfter": "をご用意",
+      "title": "インスピレーション",
+      "accent": "料金プラン",
+      "description": "上質なラウンジで受ける、心安らぐプロのケア。",
+      "packages": {
+        "dipPowder": "NUGENESIS ディップパウダー",
+        "massage": "リラクゼーションマッサージ",
+        "facial": "HYDRAMEMORY フェイシャル",
+        "deluxePedicure": "デラックスペディキュア"
+      }
+    },
+    "journal": {
+      "title": "ブログ更新",
+      "accent": "最新記事",
+      "intro": "最新の美容トレンドとセルフケアのヒントをご覧ください。"
+    },
+    "booking": {
+      "intro": "いつでもお気軽にお問い合わせください",
+      "title": "無料相談を受ける",
+      "appointment": "予約する",
+      "call": "電話する"
+    },
+    "footer": {
+      "aboutTitle": "私たちについて",
+      "aboutText": "環境に配慮した空間で、優れたカスタマーサービスを提供しています。お客様一人ひとりに合わせ、最適なサービスと商品をご提案します。",
+      "contactTitle": "お問い合わせ",
+      "phone": "電話",
+      "consultation": "ご相談",
+      "requestConsultation": "プロジェクト相談を予約",
+      "email": "メール",
+      "directions": "アクセスを見る",
+      "news": "最新記事",
+      "post1": "少なく、より良いものを選ぶ",
+      "post2": "集中と休息のための光",
+      "post3": "自分をいたわる時間"
+    }
+  },
   "pagination": { "label": "ページ移動", "previous": "前のページ", "next": "次のページ" },
   "home": {
     "featuredEyebrow": "厳選された必需品",
